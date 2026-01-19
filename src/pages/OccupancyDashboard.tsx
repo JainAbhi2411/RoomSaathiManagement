@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { getProperties, getRoomsByProperty } from '@/db/api';
-import type { Property, Room } from '@/types';
+import { getProperties, getRoomsByProperty, getTenants } from '@/db/api';
+import type { Property, Room, Tenant } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Building2, DoorOpen, Users, TrendingUp, Armchair, Bed, Home, UtensilsCrossed } from 'lucide-react';
+import { Building2, DoorOpen, Users, TrendingUp, Armchair, Bed, Home, UtensilsCrossed, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function OccupancyDashboard() {
@@ -21,6 +21,7 @@ export default function OccupancyDashboard() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,7 +32,7 @@ export default function OccupancyDashboard() {
 
   useEffect(() => {
     if (selectedProperty) {
-      loadRooms();
+      loadRoomsAndTenants();
     }
   }, [selectedProperty]);
 
@@ -50,13 +51,17 @@ export default function OccupancyDashboard() {
     }
   };
 
-  const loadRooms = async () => {
+  const loadRoomsAndTenants = async () => {
     if (!selectedProperty) return;
     try {
-      const roomsData = await getRoomsByProperty(selectedProperty.id);
+      const [roomsData, tenantsData] = await Promise.all([
+        getRoomsByProperty(selectedProperty.id),
+        getTenants(selectedProperty.id),
+      ]);
       setRooms(roomsData);
+      setTenants(tenantsData);
     } catch (error) {
-      console.error('Failed to load rooms:', error);
+      console.error('Failed to load data:', error);
     }
   };
 
@@ -86,9 +91,17 @@ export default function OccupancyDashboard() {
     (room.occupied_seats || 0) === 0
   ).length;
 
+  // Get tenant for a specific seat in a room
+  const getTenantForSeat = (room: Room, seatIndex: number): Tenant | null => {
+    const roomTenants = tenants.filter(t => t.room_id === room.id);
+    // Sort by created_at to assign seats in order
+    roomTenants.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    return roomTenants[seatIndex] || null;
+  };
+
   const getSeatStatus = (room: Room, seatIndex: number) => {
-    const occupiedSeats = room.occupied_seats || 0;
-    return seatIndex < occupiedSeats ? 'occupied' : 'vacant';
+    const tenant = getTenantForSeat(room, seatIndex);
+    return tenant ? 'occupied' : 'vacant';
   };
 
   const getSeatColor = (status: string) => {
@@ -253,7 +266,7 @@ export default function OccupancyDashboard() {
         </CardContent>
       </Card>
 
-      {/* Floor-wise Room Visualization - Movie Theater Style */}
+      {/* Building Visualization - Complete PG in a Box */}
       {rooms.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
@@ -271,187 +284,219 @@ export default function OccupancyDashboard() {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-8">
-          {floors.map((floor) => {
-            const floorRooms = roomsByFloor[floor];
-            const PropertyIcon = selectedProperty ? getPropertyIcon(selectedProperty.property_type) : DoorOpen;
-            
-            return (
-              <Card key={floor} className="overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5 border-b">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-primary rounded-lg">
-                        <Building2 className="h-5 w-5 text-primary-foreground" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-2xl">
-                          {floor === 0 ? 'Ground Floor' : `Floor ${floor}`}
-                        </CardTitle>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {floorRooms.length} {floorRooms.length === 1 ? 'Room' : 'Rooms'} • 
-                          {' '}{floorRooms.reduce((sum, r) => sum + r.capacity, 0)} Total Seats
-                        </p>
-                      </div>
-                    </div>
-                    <Badge variant="outline" className="text-lg px-4 py-2">
-                      {floorRooms.filter(r => (r.occupied_seats || 0) > 0).length}/{floorRooms.length} Occupied
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-8">
-                  {/* Movie Theater Style Layout */}
-                  <div className="space-y-6">
-                    {floorRooms.map((room, roomIndex) => {
-                      const occupiedSeats = room.occupied_seats || 0;
-                      const availableSeats = room.capacity - occupiedSeats;
-                      const occupancyPercent = ((occupiedSeats / room.capacity) * 100).toFixed(0);
-                      const isFullyOccupied = occupiedSeats >= room.capacity;
-                      const isVacant = occupiedSeats === 0;
+        <Card className="overflow-hidden border-2 shadow-2xl">
+          {/* Building Header */}
+          <CardHeader className="bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-primary-foreground border-b-4 border-primary">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-primary-foreground/20 rounded-xl backdrop-blur-sm">
+                  <Building2 className="h-8 w-8" />
+                </div>
+                <div>
+                  <CardTitle className="text-3xl font-bold">{selectedProperty?.name}</CardTitle>
+                  <p className="text-primary-foreground/80 mt-1">
+                    {selectedProperty?.property_type?.toUpperCase()} • {floors.length} {floors.length === 1 ? 'Floor' : 'Floors'}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-4xl font-bold">{occupancyRate}%</div>
+                <p className="text-sm text-primary-foreground/80">Occupancy</p>
+              </div>
+            </div>
+          </CardHeader>
 
-                      return (
-                        <div
-                          key={room.id}
-                          className={cn(
-                            'relative p-6 rounded-xl border-2 transition-all duration-300 hover:shadow-xl',
-                            getRoomStatusColor(room),
-                            'hover:scale-[1.02]'
-                          )}
-                        >
-                          {/* Room Header */}
-                          <div className="flex items-start justify-between mb-6">
-                            <div className="flex items-center gap-3">
-                              <div className={cn(
-                                'p-3 rounded-lg',
-                                isFullyOccupied ? 'bg-destructive' : isVacant ? 'bg-secondary' : 'bg-warning'
-                              )}>
-                                <PropertyIcon className={cn(
-                                  'h-6 w-6',
-                                  isFullyOccupied ? 'text-destructive-foreground' : isVacant ? 'text-secondary-foreground' : 'text-warning-foreground'
-                                )} />
-                              </div>
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <h3 className="text-xl font-bold">Room {room.room_number}</h3>
-                                  {room.sharing_type && (
-                                    <Badge variant="secondary" className="capitalize">
-                                      {room.sharing_type}
-                                    </Badge>
-                                  )}
-                                </div>
-                                <p className="text-sm text-muted-foreground mt-1">
-                                  {room.capacity} {room.capacity === 1 ? 'Seat' : 'Seats'} • 
-                                  {' '}{occupiedSeats} Occupied • 
-                                  {' '}{availableSeats} Available
-                                </p>
-                              </div>
+          {/* Building Body - Floors Stacked Vertically */}
+          <CardContent className="p-0 bg-gradient-to-b from-muted/30 to-background">
+            <div className="relative">
+              {/* Building Structure */}
+              <div className="space-y-0">
+                {floors.map((floor, floorIdx) => {
+                  const floorRooms = roomsByFloor[floor];
+                  const PropertyIcon = selectedProperty ? getPropertyIcon(selectedProperty.property_type) : DoorOpen;
+                  const floorOccupied = floorRooms.reduce((sum, r) => sum + (r.occupied_seats || 0), 0);
+                  const floorCapacity = floorRooms.reduce((sum, r) => sum + r.capacity, 0);
+                  const floorOccupancyPercent = ((floorOccupied / floorCapacity) * 100).toFixed(0);
+                  
+                  return (
+                    <div
+                      key={floor}
+                      className={cn(
+                        'relative border-b-4 border-border/50',
+                        floorIdx === 0 && 'border-t-4'
+                      )}
+                    >
+                      {/* Floor Header Bar */}
+                      <div className="sticky top-0 z-10 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/5 border-b-2 border-primary/30 backdrop-blur-sm">
+                        <div className="flex items-center justify-between px-6 py-3">
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary text-primary-foreground font-bold text-lg shadow-lg">
+                              {floor === 0 ? 'G' : floor}
                             </div>
-                            <div className="text-right">
-                              <Badge 
-                                variant={isFullyOccupied ? 'destructive' : isVacant ? 'secondary' : 'default'}
-                                className="text-lg px-4 py-2"
-                              >
-                                {occupancyPercent}%
-                              </Badge>
-                              {room.price && (
-                                <p className="text-sm font-semibold mt-2">
-                                  ₹{room.price_per_seat ? `${room.price_per_seat}/seat` : room.price.toLocaleString()}
-                                </p>
-                              )}
+                            <div>
+                              <h3 className="font-bold text-lg">
+                                {floor === 0 ? 'Ground Floor' : `Floor ${floor}`}
+                              </h3>
+                              <p className="text-xs text-muted-foreground">
+                                {floorRooms.length} Rooms • {floorCapacity} Seats
+                              </p>
                             </div>
                           </div>
-
-                          {/* Movie Theater Style Seat Grid */}
-                          <div className="bg-background/50 rounded-lg p-6 border">
-                            <div className="flex items-center justify-center mb-4">
-                              <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 py-1 bg-muted rounded-full">
-                                Room Layout
-                              </div>
-                            </div>
-                            
-                            {/* Seat Grid - Theater Style */}
-                            <div className="flex justify-center">
-                              <div 
-                                className={cn(
-                                  'grid gap-3',
-                                  room.capacity <= 2 ? 'grid-cols-2' :
-                                  room.capacity <= 4 ? 'grid-cols-2' :
-                                  room.capacity <= 6 ? 'grid-cols-3' :
-                                  room.capacity <= 9 ? 'grid-cols-3' :
-                                  'grid-cols-4'
-                                )}
-                                style={{ maxWidth: '400px' }}
-                              >
-                                {Array.from({ length: room.capacity }).map((_, seatIndex) => {
-                                  const status = getSeatStatus(room, seatIndex);
-                                  const seatNumber = seatIndex + 1;
-                                  
-                                  return (
-                                    <div
-                                      key={seatIndex}
-                                      className="flex flex-col items-center gap-2 group"
-                                      title={`Seat ${seatNumber} - ${status === 'occupied' ? 'Occupied' : 'Available'}`}
-                                    >
-                                      {/* Seat Icon */}
-                                      <div
-                                        className={cn(
-                                          'relative w-16 h-16 rounded-lg flex items-center justify-center transition-all duration-300 cursor-pointer',
-                                          getSeatColor(status),
-                                          'hover:scale-110 hover:shadow-lg',
-                                          'border-2',
-                                          status === 'occupied' ? 'border-destructive' : 'border-secondary'
-                                        )}
-                                      >
-                                        <Armchair className="h-8 w-8" />
-                                        {/* Seat Number Badge */}
-                                        <div className={cn(
-                                          'absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold',
-                                          status === 'occupied' ? 'bg-destructive text-destructive-foreground' : 'bg-secondary text-secondary-foreground'
-                                        )}>
-                                          {seatNumber}
-                                        </div>
-                                      </div>
-                                      {/* Seat Label */}
-                                      <span className={cn(
-                                        'text-xs font-medium',
-                                        status === 'occupied' ? 'text-destructive' : 'text-secondary'
-                                      )}>
-                                        {status === 'occupied' ? 'Occupied' : 'Available'}
-                                      </span>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-
-                            {/* Room Stats Bar */}
-                            <div className="mt-6 pt-4 border-t">
-                              <div className="flex items-center justify-between text-sm">
-                                <div className="flex items-center gap-4">
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-destructive"></div>
-                                    <span className="text-muted-foreground">{occupiedSeats} Occupied</span>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-secondary"></div>
-                                    <span className="text-muted-foreground">{availableSeats} Available</span>
-                                  </div>
-                                </div>
-                                <div className="font-semibold">
-                                  Capacity: {room.capacity}
-                                </div>
-                              </div>
-                            </div>
+                          <div className="flex items-center gap-4">
+                            <Badge variant="outline" className="text-base px-4 py-2">
+                              {floorOccupancyPercent}% Full
+                            </Badge>
+                            <Badge variant="secondary" className="text-sm">
+                              {floorOccupied}/{floorCapacity} Occupied
+                            </Badge>
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+                      </div>
+
+                      {/* Rooms on this Floor */}
+                      <div className="p-6 bg-gradient-to-br from-background via-muted/20 to-background">
+                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                          {floorRooms.map((room) => {
+                            const occupiedSeats = room.occupied_seats || 0;
+                            const availableSeats = room.capacity - occupiedSeats;
+                            const occupancyPercent = ((occupiedSeats / room.capacity) * 100).toFixed(0);
+                            const isFullyOccupied = occupiedSeats >= room.capacity;
+                            const isVacant = occupiedSeats === 0;
+
+                            return (
+                              <div
+                                key={room.id}
+                                className={cn(
+                                  'relative rounded-xl border-2 p-5 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]',
+                                  getRoomStatusColor(room),
+                                  'bg-card'
+                                )}
+                              >
+                                {/* Room Header */}
+                                <div className="flex items-center justify-between mb-4 pb-3 border-b">
+                                  <div className="flex items-center gap-3">
+                                    <div className={cn(
+                                      'p-2 rounded-lg',
+                                      isFullyOccupied ? 'bg-destructive' : isVacant ? 'bg-secondary' : 'bg-warning'
+                                    )}>
+                                      <PropertyIcon className={cn(
+                                        'h-5 w-5',
+                                        isFullyOccupied ? 'text-destructive-foreground' : isVacant ? 'text-secondary-foreground' : 'text-warning-foreground'
+                                      )} />
+                                    </div>
+                                    <div>
+                                      <div className="flex items-center gap-2">
+                                        <h4 className="font-bold text-lg">Room {room.room_number}</h4>
+                                        {room.sharing_type && (
+                                          <Badge variant="outline" className="text-xs capitalize">
+                                            {room.sharing_type}
+                                          </Badge>
+                                        )}
+                                      </div>
+                                      <p className="text-xs text-muted-foreground">
+                                        {room.capacity} {room.capacity === 1 ? 'Seat' : 'Seats'}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <Badge 
+                                    variant={isFullyOccupied ? 'destructive' : isVacant ? 'secondary' : 'default'}
+                                    className="text-base px-3 py-1"
+                                  >
+                                    {occupancyPercent}%
+                                  </Badge>
+                                </div>
+
+                                {/* Seats Grid with Tenant Names */}
+                                <div className="space-y-3">
+                                  <div 
+                                    className={cn(
+                                      'grid gap-3',
+                                      room.capacity <= 2 ? 'grid-cols-2' :
+                                      room.capacity <= 4 ? 'grid-cols-2' :
+                                      'grid-cols-3'
+                                    )}
+                                  >
+                                    {Array.from({ length: room.capacity }).map((_, seatIndex) => {
+                                      const status = getSeatStatus(room, seatIndex);
+                                      const tenant = getTenantForSeat(room, seatIndex);
+                                      const seatNumber = seatIndex + 1;
+                                      
+                                      return (
+                                        <div
+                                          key={seatIndex}
+                                          className={cn(
+                                            'relative rounded-lg p-3 border-2 transition-all duration-300',
+                                            getSeatColor(status),
+                                            status === 'occupied' ? 'border-destructive shadow-md' : 'border-secondary',
+                                            'hover:scale-105 cursor-pointer'
+                                          )}
+                                          title={tenant ? `${tenant.full_name} - ${tenant.phone}` : `Seat ${seatNumber} - Available`}
+                                        >
+                                          {/* Seat Icon */}
+                                          <div className="flex items-center justify-center mb-2">
+                                            <Armchair className="h-6 w-6" />
+                                          </div>
+                                          
+                                          {/* Seat Number Badge */}
+                                          <div className={cn(
+                                            'absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold',
+                                            status === 'occupied' ? 'bg-destructive text-destructive-foreground' : 'bg-secondary text-secondary-foreground'
+                                          )}>
+                                            {seatNumber}
+                                          </div>
+
+                                          {/* Tenant Name or Status */}
+                                          <div className="text-center">
+                                            {tenant ? (
+                                              <>
+                                                <div className="flex items-center justify-center gap-1 mb-1">
+                                                  <User className="h-3 w-3" />
+                                                  <p className="text-xs font-bold truncate">
+                                                    {tenant.full_name.split(' ')[0]}
+                                                  </p>
+                                                </div>
+                                                <p className="text-[10px] opacity-80 truncate">
+                                                  {tenant.full_name.split(' ').slice(1).join(' ')}
+                                                </p>
+                                              </>
+                                            ) : (
+                                              <p className="text-xs font-medium">Available</p>
+                                            )}
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+
+                                  {/* Room Footer Stats */}
+                                  <div className="flex items-center justify-between text-xs pt-2 border-t">
+                                    <div className="flex items-center gap-3">
+                                      <span className="flex items-center gap-1">
+                                        <div className="w-2 h-2 rounded-full bg-destructive"></div>
+                                        {occupiedSeats} Occupied
+                                      </span>
+                                      <span className="flex items-center gap-1">
+                                        <div className="w-2 h-2 rounded-full bg-secondary"></div>
+                                        {availableSeats} Available
+                                      </span>
+                                    </div>
+                                    {room.price_per_seat && (
+                                      <span className="font-semibold">₹{room.price_per_seat}/seat</span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
