@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getProperties, getRoomsByProperty, getTenants } from '@/db/api';
+import { supabase } from '@/db/supabase';
 import type { Property, Room, Tenant } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

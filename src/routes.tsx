@@ -11,6 +11,7 @@ import OccupancyDashboard from './pages/OccupancyDashboard';
 import WhatsAppSettings from './pages/WhatsAppSettings';
 import Tenants from './pages/Tenants';
 import Payments from './pages/Payments';
+import RentPayments from './pages/RentPayments';
 import Maintenance from './pages/Maintenance';
 import Contracts from './pages/Contracts';
 import Analytics from './pages/Analytics';
@@ -94,6 +95,11 @@ const routes: RouteConfig[] = [
     name: 'Payments',
     path: '/payments',
     element: <Payments />,
+  },
+  {
+    name: 'Rent Payments',
+    path: '/rent-payments',
+    element: <RentPayments />,
   },
   {
     name: 'Maintenance',

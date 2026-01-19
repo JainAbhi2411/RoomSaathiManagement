@@ -108,7 +108,7 @@ export default function Tenants() {
         .from('rooms')
         .select('id, occupied_seats');
       
-      if (allRooms) {
+      if (allRooms && Array.isArray(allRooms)) {
         const updates = allRooms
           .filter(room => {
             const actualCount = tenantCountByRoom[room.id] || 0;

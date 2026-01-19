@@ -56,6 +56,7 @@ export interface Room {
   room_number: string;
   floor: number | null;
   price: number;
+  monthly_rent?: number;
   is_occupied: boolean;
   capacity: number;
   sharing_type: string | null;
@@ -82,6 +83,29 @@ export interface Tenant {
   id_proof_type: string | null;
   id_proof_number: string | null;
   emergency_contact: string | null;
+  move_in_date?: string | null;
+  monthly_rent?: number;
+  rent_due_day?: number;
+  deposit_amount?: number;
+  deposit_paid?: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RentPayment {
+  id: string;
+  tenant_id: string;
+  room_id: string;
+  property_id: string;
+  amount: number;
+  due_date: string;
+  paid_date: string | null;
+  status: 'pending' | 'paid' | 'overdue' | 'partial';
+  payment_method: string | null;
+  transaction_id: string | null;
+  notes: string | null;
+  reminder_sent: boolean;
+  reminder_sent_at: string | null;
   created_at: string;
   updated_at: string;
 }

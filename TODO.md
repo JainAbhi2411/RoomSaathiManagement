@@ -1,51 +1,78 @@
-# Task: Build Property Management Pro Application
+# Task: Rent Payment System Implementation
 
 ## Plan
-- [ ] Step 1: Setup Design System
-  - [ ] Update index.css with professional property management color scheme
-- [ ] Step 2: Initialize Supabase Backend
-  - [ ] Initialize Supabase
-  - [ ] Disable email verification
-  - [ ] Create database schema (profiles, properties, rooms, bookings, tenants, payments, maintenance_requests, contracts)
-  - [ ] Create image bucket for property images
-  - [ ] Setup RLS policies and helper functions
-- [ ] Step 3: Create Type Definitions and API Layer
-  - [ ] Create types.ts with all database types
-  - [ ] Create db/supabase.ts
-  - [ ] Create db/api.ts with all database operations
-- [ ] Step 4: Update Authentication System
-  - [ ] Update AuthContext.tsx
-  - [ ] Update RouteGuard.tsx
-- [ ] Step 5: Create Application Structure
-  - [ ] Create routes configuration
-  - [ ] Create AppLayout with sidebar navigation
-  - [ ] Update App.tsx with providers and layout
-- [ ] Step 6: Implement Core Pages
-  - [ ] Login page
-  - [ ] Dashboard page with overview stats
-  - [ ] Properties list page
-  - [ ] Add/Edit property page with image upload
-  - [ ] Property details page
-  - [ ] Room booking interface page
-  - [ ] Vacancy dashboard page
-- [ ] Step 7: Implement Management Pages
-  - [ ] Tenants management page
-  - [ ] Payments tracking page
-  - [ ] Maintenance requests page
-  - [ ] Contracts management page
-  - [ ] Analytics and reports page
-- [ ] Step 8: Create Reusable Components
-  - [ ] PropertyCard component
-  - [ ] RoomGrid component
-  - [ ] BookingInterface component
-  - [ ] StatsCard component
-  - [ ] Charts components
-- [ ] Step 9: Run Lint and Fix Issues
+
+- [x] Step 1: Database & Types Setup
+  - [x] Create rent_payments table
+  - [x] Add rent fields to rooms and tenants tables
+  - [x] Update TypeScript types
+  - [x] Fix TypeScript errors in existing code (minor type issues remain)
+
+- [x] Step 2: API Functions
+  - [x] Create rent payment API functions (CRUD)
+  - [x] Add function to generate monthly rent payments
+  - [x] Add function to mark payment as paid
+  - [x] Add function to get payment analytics
+  - [x] Add getRentPayments with filters
+  - [x] Add getRentPaymentById
+  - [x] Add createRentPayment
+  - [x] Add updateRentPayment
+  - [x] Add deleteRentPayment
+  - [x] Add markRentPaymentAsPaid
+  - [x] Add generateMonthlyRentPayment
+  - [x] Add getRentPaymentAnalytics
+
+- [x] Step 3: Rent Payments Page
+  - [x] Create RentPayments page component
+  - [x] Payment status cards (pending, paid, overdue)
+  - [x] Payment list/table with filters
+  - [x] Mark as paid functionality
+  - [x] Payment method selection
+  - [x] Transaction ID input
+  - [x] Notes field
+  - [x] Collection rate display
+  - [x] Property and status filters
+
+- [x] Step 4: Navigation & Routes
+  - [x] Add RentPayments route
+  - [x] Update sidebar navigation
+  - [x] Add date-fns package for date formatting
+
+- [ ] Step 5: Enhanced Tenant Form (Next)
+  - [ ] Add move-in date field
+  - [ ] Add monthly rent field
+  - [ ] Add rent due day field
+  - [ ] Add deposit fields
+  - [ ] Auto-generate first rent payment on tenant creation
+
+- [ ] Step 6: Payment Analytics Charts (Next)
+  - [ ] Payment timeline chart (line/bar chart)
+  - [ ] Payment status distribution (pie chart)
+  - [ ] Monthly revenue chart
+
+- [ ] Step 7: WhatsApp Integration (Next)
+  - [ ] Auto-send payment reminders
+  - [ ] Payment due notifications
+  - [ ] Payment received confirmation
+
+- [ ] Step 8: Automatic Payment Generation (Next)
+  - [ ] Create Edge Function for monthly payment generation
+  - [ ] Schedule monthly payment creation
+  - [ ] Update payment status (pending → overdue)
+
+- [ ] Step 9: Testing & Validation
+  - [ ] Test tenant creation with rent
+  - [ ] Test payment marking
+  - [ ] Test WhatsApp notifications
+  - [ ] Test analytics charts
+  - [ ] Run lint checks and fix remaining type errors
 
 ## Notes
-- Using username + password authentication
-- First registered user becomes admin
-- Image upload with automatic compression to <1MB
-- Real-time booking system similar to movie seat selection
-- Comprehensive analytics with charts
-- Professional business aesthetic with blue/green color scheme
+
+- Rent payment starts from move-in date
+- Monthly cycle based on rent_due_day (1-31)
+- Automatic status update: pending → overdue after due date
+- WhatsApp reminders sent 3 days before due date
+- Payment analytics show trends and collection rates
+- Core functionality implemented: database, API, UI page
+- Remaining: tenant form updates, charts, WhatsApp automation, Edge Function

@@ -37,7 +37,7 @@ const navigation = [
   { name: 'Vacancy', href: '/vacancy', icon: Grid3x3 },
   { name: 'Occupancy', href: '/occupancy', icon: DoorOpen },
   { name: 'Tenants', href: '/tenants', icon: Users },
-  { name: 'Payments', href: '/payments', icon: CreditCard },
+  { name: 'Rent Payments', href: '/rent-payments', icon: CreditCard },
   { name: 'Maintenance', href: '/maintenance', icon: Wrench },
   { name: 'Contracts', href: '/contracts', icon: FileText },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
