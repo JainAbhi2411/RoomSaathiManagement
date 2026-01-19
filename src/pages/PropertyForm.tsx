@@ -79,9 +79,9 @@ export default function PropertyForm() {
     pincode: '',
 
     // Step 3: Property Details
-    number_of_floors: 1,
-    rooms_per_floor: 1,
-    total_rooms: 1,
+    number_of_floors: 0,
+    rooms_per_floor: 0,
+    total_rooms: 0,
     monthly_rent: 0,
     security_deposit: 0,
     maintenance_charges: 0,
@@ -796,23 +796,24 @@ export default function PropertyForm() {
                       type="number"
                       min="1"
                       placeholder="e.g., 3"
-                      value={formData.number_of_floors}
+                      value={formData.number_of_floors || ''}
                       onChange={(e) => {
                         const value = e.target.value;
-                        // Allow empty string temporarily, or parse the number
+                        // Allow empty string or parse the number
                         if (value === '') {
                           setFormData({
                             ...formData,
-                            number_of_floors: 1,
-                            total_rooms: 1 * formData.rooms_per_floor,
+                            number_of_floors: 0,
+                            total_rooms: 0,
                           });
                         } else {
                           const floors = parseInt(value);
-                          if (!isNaN(floors) && floors > 0) {
+                          if (!isNaN(floors) && floors >= 0) {
+                            const roomsPerFloor = formData.rooms_per_floor || 0;
                             setFormData({
                               ...formData,
                               number_of_floors: floors,
-                              total_rooms: floors * formData.rooms_per_floor,
+                              total_rooms: floors * roomsPerFloor,
                             });
                           }
                         }
@@ -828,23 +829,24 @@ export default function PropertyForm() {
                       type="number"
                       min="1"
                       placeholder="e.g., 4"
-                      value={formData.rooms_per_floor}
+                      value={formData.rooms_per_floor || ''}
                       onChange={(e) => {
                         const value = e.target.value;
-                        // Allow empty string temporarily, or parse the number
+                        // Allow empty string or parse the number
                         if (value === '') {
                           setFormData({
                             ...formData,
-                            rooms_per_floor: 1,
-                            total_rooms: formData.number_of_floors * 1,
+                            rooms_per_floor: 0,
+                            total_rooms: 0,
                           });
                         } else {
                           const roomsPerFloor = parseInt(value);
-                          if (!isNaN(roomsPerFloor) && roomsPerFloor > 0) {
+                          if (!isNaN(roomsPerFloor) && roomsPerFloor >= 0) {
+                            const floors = formData.number_of_floors || 0;
                             setFormData({
                               ...formData,
                               rooms_per_floor: roomsPerFloor,
-                              total_rooms: formData.number_of_floors * roomsPerFloor,
+                              total_rooms: floors * roomsPerFloor,
                             });
                           }
                         }
