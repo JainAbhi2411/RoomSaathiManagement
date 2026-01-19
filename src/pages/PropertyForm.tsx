@@ -799,13 +799,25 @@ export default function PropertyForm() {
                       value={formData.number_of_floors}
                       onChange={(e) => {
                         const value = e.target.value;
-                        const floors = value === '' ? 1 : parseInt(value) || 1;
-                        setFormData({
-                          ...formData,
-                          number_of_floors: floors,
-                          total_rooms: floors * formData.rooms_per_floor,
-                        });
+                        // Allow empty string temporarily, or parse the number
+                        if (value === '') {
+                          setFormData({
+                            ...formData,
+                            number_of_floors: 1,
+                            total_rooms: 1 * formData.rooms_per_floor,
+                          });
+                        } else {
+                          const floors = parseInt(value);
+                          if (!isNaN(floors) && floors > 0) {
+                            setFormData({
+                              ...formData,
+                              number_of_floors: floors,
+                              total_rooms: floors * formData.rooms_per_floor,
+                            });
+                          }
+                        }
                       }}
+                      onFocus={(e) => e.target.select()}
                       required
                     />
                   </div>
@@ -819,13 +831,25 @@ export default function PropertyForm() {
                       value={formData.rooms_per_floor}
                       onChange={(e) => {
                         const value = e.target.value;
-                        const roomsPerFloor = value === '' ? 1 : parseInt(value) || 1;
-                        setFormData({
-                          ...formData,
-                          rooms_per_floor: roomsPerFloor,
-                          total_rooms: formData.number_of_floors * roomsPerFloor,
-                        });
+                        // Allow empty string temporarily, or parse the number
+                        if (value === '') {
+                          setFormData({
+                            ...formData,
+                            rooms_per_floor: 1,
+                            total_rooms: formData.number_of_floors * 1,
+                          });
+                        } else {
+                          const roomsPerFloor = parseInt(value);
+                          if (!isNaN(roomsPerFloor) && roomsPerFloor > 0) {
+                            setFormData({
+                              ...formData,
+                              rooms_per_floor: roomsPerFloor,
+                              total_rooms: formData.number_of_floors * roomsPerFloor,
+                            });
+                          }
+                        }
                       }}
+                      onFocus={(e) => e.target.select()}
                       required
                     />
                   </div>
