@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { getAllPropertiesForAdmin, verifyProperty, rejectPropertyVerification, checkIsAdmin } from '@/db/api';
+import { getAllPropertiesForAdmin, verifyProperty, rejectPropertyVerification, checkIsAdmin, syncPropertyToWebsite } from '@/db/api';
 import type { Property } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -37,6 +37,9 @@ import {
   MapPin,
   Calendar,
   Filter,
+  Globe,
+  AlertTriangle,
+  RefreshCw,
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -53,6 +56,7 @@ export default function AdminDashboard() {
   const [rejectDialog, setRejectDialog] = useState(false);
   const [notes, setNotes] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'verified' | 'unverified'>('all');
+  const [verifying, setVerifying] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -120,11 +124,37 @@ export default function AdminDashboard() {
     if (!selectedProperty) return;
 
     try {
+      setVerifying(true);
+      
+      // Verify property
       await verifyProperty(selectedProperty.id, user!.id, notes);
+      
       toast({
-        title: 'Success',
-        description: 'Property verified successfully',
+        title: 'Property Verified',
+        description: 'Property has been verified successfully',
       });
+
+      // Sync to website
+      toast({
+        title: 'Syncing to Website',
+        description: 'Syncing property to main Roomsaathi website...',
+      });
+
+      const syncResult = await syncPropertyToWebsite(selectedProperty.id);
+
+      if (syncResult.success) {
+        toast({
+          title: 'Sync Successful',
+          description: 'Property has been published to Roomsaathi website',
+        });
+      } else {
+        toast({
+          title: 'Sync Failed',
+          description: syncResult.error || 'Failed to sync property to website. You can retry later.',
+          variant: 'destructive',
+        });
+      }
+
       setVerifyDialog(false);
       setNotes('');
       setSelectedProperty(null);
@@ -136,6 +166,8 @@ export default function AdminDashboard() {
         description: 'Failed to verify property',
         variant: 'destructive',
       });
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -289,6 +321,7 @@ export default function AdminDashboard() {
                     <TableHead>Type</TableHead>
                     <TableHead>Listed Date</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Website Sync</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -341,6 +374,26 @@ export default function AdminDashboard() {
                         )}
                       </TableCell>
                       <TableCell>
+                        {property.synced_to_website ? (
+                          <Badge className="bg-blue-500">
+                            <Globe className="h-3 w-3 mr-1" />
+                            Synced
+                          </Badge>
+                        ) : property.sync_error ? (
+                          <Badge variant="destructive">
+                            <AlertTriangle className="h-3 w-3 mr-1" />
+                            Failed
+                          </Badge>
+                        ) : property.is_verified ? (
+                          <Badge variant="outline">
+                            <RefreshCw className="h-3 w-3 mr-1" />
+                            Pending
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary">-</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
                         <div className="flex gap-2">
                           <Button
                             size="sm"
@@ -373,6 +426,31 @@ export default function AdminDashboard() {
                                 Reject
                               </Button>
                             </>
+                          )}
+                          {property.is_verified && !property.synced_to_website && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={async () => {
+                                const result = await syncPropertyToWebsite(property.id);
+                                if (result.success) {
+                                  toast({
+                                    title: 'Sync Successful',
+                                    description: 'Property synced to website',
+                                  });
+                                  loadProperties();
+                                } else {
+                                  toast({
+                                    title: 'Sync Failed',
+                                    description: result.error,
+                                    variant: 'destructive',
+                                  });
+                                }
+                              }}
+                            >
+                              <RefreshCw className="h-4 w-4 mr-1" />
+                              Sync
+                            </Button>
                           )}
                         </div>
                       </TableCell>
@@ -407,12 +485,21 @@ export default function AdminDashboard() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setVerifyDialog(false)}>
+            <Button variant="outline" onClick={() => setVerifyDialog(false)} disabled={verifying}>
               Cancel
             </Button>
-            <Button onClick={handleVerify}>
-              <CheckCircle2 className="h-4 w-4 mr-2" />
-              Verify Property
+            <Button onClick={handleVerify} disabled={verifying}>
+              {verifying ? (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  Verifying & Syncing...
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="mr-2 h-4 w-4" />
+                  Verify & Sync to Website
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

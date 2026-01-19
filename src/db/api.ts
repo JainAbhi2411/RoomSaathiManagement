@@ -65,6 +65,77 @@ export const verifyProperty = async (propertyId: string, adminId: string, notes?
   if (logError) throw logError;
 };
 
+// Admin: Sync property to website after verification
+export const syncPropertyToWebsite = async (propertyId: string): Promise<{ success: boolean; error?: string }> => {
+  try {
+    // Get property with owner details
+    const { data: property, error: fetchError } = await supabase
+      .from('properties')
+      .select(`
+        *,
+        owner:profiles!properties_owner_id_fkey(username, email, phone)
+      `)
+      .eq('id', propertyId)
+      .maybeSingle();
+
+    if (fetchError || !property) {
+      throw new Error('Property not found');
+    }
+
+    // Import sync function dynamically to avoid circular dependencies
+    const { syncPropertyToWebsite: syncToWebsite } = await import('@/lib/websiteSync');
+    const result = await syncToWebsite(property);
+
+    if (result.success) {
+      // Update property with sync status
+      await supabase
+        .from('properties')
+        .update({
+          synced_to_website: true,
+          website_property_id: result.websitePropertyId,
+          last_sync_at: new Date().toISOString(),
+          sync_error: null,
+        })
+        .eq('id', propertyId);
+
+      // Log successful sync
+      await supabase
+        .from('property_sync_logs')
+        .insert({
+          property_id: propertyId,
+          sync_status: 'success',
+          website_property_id: result.websitePropertyId,
+          synced_data: property,
+        });
+    } else {
+      // Update property with error
+      await supabase
+        .from('properties')
+        .update({
+          sync_error: result.error,
+        })
+        .eq('id', propertyId);
+
+      // Log failed sync
+      await supabase
+        .from('property_sync_logs')
+        .insert({
+          property_id: propertyId,
+          sync_status: 'failed',
+          error_message: result.error,
+        });
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Failed to sync property:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+};
+
 // Admin: Reject property verification
 export const rejectPropertyVerification = async (propertyId: string, adminId: string, notes: string): Promise<void> => {
   const { error: updateError } = await supabase

@@ -50,6 +50,10 @@ export interface Property {
   is_verified?: boolean;
   verified_at?: string;
   verified_by?: string;
+  synced_to_website?: boolean;
+  website_property_id?: string;
+  last_sync_at?: string;
+  sync_error?: string;
   created_at: string;
   updated_at: string;
   owner?: {
@@ -67,6 +71,16 @@ export interface PropertyVerification {
   notes?: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface PropertySyncLog {
+  id: string;
+  property_id: string;
+  sync_status: 'pending' | 'success' | 'failed';
+  website_property_id?: string;
+  error_message?: string;
+  synced_data?: any;
+  created_at: string;
 }
 
 export interface Room {
