@@ -1,5 +1,7 @@
 # Property Management Software Requirements Document
-\n## 1. Application Overview\n
+
+## 1. Application Overview
+
 ### 1.1 Application Name
 Property Management Pro
 
@@ -8,12 +10,11 @@ A professional management software designed for property owners of PG, hostels, 
 
 ## 2. Core Features
 
-### 2.1 Owner Account Management\n- Owner registration and login
-- Profile management
+### 2.1 Owner Account Management
+- Owner registration and login\n- Profile management
 - Account settings
-
-### 2.2 Advanced Property Listing Management\n- Multi-step property listing process:
-  - **Step 1: Basic Information**
+\n### 2.2 Advanced Property Listing Management
+- Multi-step property listing process:\n  - **Step 1: Basic Information**
     - Property type selection (PG, hostel, flat, mess, vacant room space)
     - Property name\n    - Property description
   - **Step 2: Property Type Specific Details**
@@ -25,19 +26,15 @@ A professional management software designed for property owners of PG, hostels, 
       - Availability type (Entire flat, Shared flat)\n    - **For PG/Hostel:**
       - Total capacity (number of beds)
       - Room sharing types available (Single, Double, Triple, Four sharing, Dormitory)
-      - Gender accommodation (Boys, Girls, Co-ed)
-      - Meal plans available (Breakfast, Lunch, Dinner, All meals, No meals)
+      - Gender accommodation (Boys, Girls, Co-ed)\n      - Meal plans available (Breakfast, Lunch, Dinner, All meals, No meals)
       - Food included (Yes/No)
     - **For Mess:**
       - Seating capacity
-      - Meal types offered (Breakfast, Lunch, Dinner, Snacks)
-      - Food type (Veg, Non-veg, Both)
-      - Meal plan options (Monthly, Daily)
-    - **For Vacant Room Space:**
+      - Meal types offered (Breakfast, Lunch, Dinner, Snacks)\n      - Food type (Veg, Non-veg, Both)
+      - Meal plan options (Monthly, Daily)\n    - **For Vacant Room Space:**
       - Room size (in sq ft)
       - Intended use (Residential, Commercial, Storage)
-      - Sharing type (Single, Shared)
-  - **Step 3: Location Details**
+      - Sharing type (Single, Shared)\n  - **Step 3: Location Details**
     - State selection (dropdown with all Indian states)
     - City selection (dropdown dynamically populated based on selected state)
     - Complete address
@@ -45,76 +42,78 @@ A professional management software designed for property owners of PG, hostels, 
     - Landmark
   - **Step 4: Property Specifications**
     - Property size (in sq ft)
-    - Total number of floors in property\n    - Floor-wise room distribution:
-      - Floor number
+    - Total number of floors in property
+    - Floor-wise room distribution:\n      - Floor number
       - Number of rooms on each floor
       - System auto-calculates total rooms across all floors
     - Age of property
     - Facing direction
   - **Step 5: Pricing Details**
-    - **For Flat/Apartment:**
-      - Monthly rent
+    - **For Flat/Apartment:**\n      - Monthly rent
       - Security deposit amount
       - Maintenance charges
       - Brokerage (if applicable)
-    - **For PG/Hostel:**
-      - Rent structure per sharing type (to be defined during room addition)
+    - **For PG/Hostel:**\n      - Rent structure per sharing type (to be defined during room addition)
       - Security deposit amount
       - Maintenance charges (included/separate)
       - Meal charges (if applicable)
-    - **For Mess:**\n      - Monthly meal plan charges\n      - Daily meal charges
-      - Security deposit
-    - **For Vacant Room Space:**\n      - Monthly rent
-      - Security deposit
-    - Electricity charges (included/separate)
+    - **For Mess:**
+      - Monthly meal plan charges
+      - Daily meal charges
+      - Security deposit\n    - **For Vacant Room Space:**
+      - Monthly rent
+      - Security deposit\n    - Electricity charges (included/separate)
     - Water charges (included/separate)
-    - Other charges
-  - **Step 6: Amenities**
+    - Other charges\n  - **Step 6: Amenities**
     - Checkboxes for amenities selection:\n      - WiFi
       - Air Conditioning
-      - Parking
-      - Power Backup
+      - Parking\n      - Power Backup
       - Laundry Service
       - Housekeeping
       - Security/CCTV
       - Lift
       - Water Purifier
       - Refrigerator
-      - Microwave
-      - TV
+      - Microwave\n      - TV
       - Washing Machine
       - Gym
       - Common Area
       - Attached Bathroom
       - Balcony
-      - Furnished\n      - Semi-Furnished\n      - Meals Included\n      - 24/7 Water Supply
+      - Furnished
+      - Semi-Furnished
+      - Meals Included
+      - 24/7 Water Supply
       - Geyser
       - Cupboard
-      - Study Table\n      - Bed
+      - Study Table
+      - Bed
   - **Step 7: Rules and Preferences**
-    - Gender preference (Male/Female/Any)\n    - Food preference (Veg/Non-veg/Both)
+    - Gender preference (Male/Female/Any)
+    - Food preference (Veg/Non-veg/Both)
     - Smoking allowed (Yes/No)
     - Drinking allowed (Yes/No)
     - Pets allowed (Yes/No)
-    - Visitor policy
-    - Gate closing time\n    - Notice period for vacating
+    - Visitor policy\n    - Gate closing time
+    - Notice period for vacating
   - **Step 8: Owner Contact Information**
     - Owner name
     - Contact number
     - Alternate contact number
-    - Email address\n    - Preferred contact time\n  - **Step 9: Media Upload**
-    - Property exterior images upload (multiple)
-    - Property common area images upload (multiple)
+    - Email address\n    - Preferred contact time
+  - **Step 9: Media Upload**
+    - Property exterior images upload (multiple)\n    - Property common area images upload (multiple)
     - Property videos upload (optional)
     - Virtual tour link (optional)
   - **Step 10: Additional Details**
-    - Nearby landmarks (schools, hospitals, metro stations, bus stops)\n    - Distance from major locations\n    - Property highlights
+    - Nearby landmarks (schools, hospitals, metro stations, bus stops)
+    - Distance from major locations
+    - Property highlights
     - Special instructions
   - **Step 11: Review and Submit**
     - Preview of all entered information
     - Edit option for each section
-    - Final submission
-- **Progress Save and Resume Functionality**
+    - Final submission\n- **Progress Save and Resume Functionality**
   - Auto-save feature that saves progress at each step
   - Manual save option available on every step
   - Save as draft button visible throughout the form
@@ -127,46 +126,51 @@ A professional management software designed for property owners of PG, hostels, 
 - Edit existing property information
 - Delete property listings
 - Property status management (Active/Inactive)
-
-### 2.3 Advanced Room Management System
+\n### 2.3 Advanced Room Management System with Floor-Based Validation
 - **Room Addition Interface** (accessible after property listing is completed)
+- **Intelligent Floor and Room Quota Management:**
+  - System automatically fetches floor configuration from property details (total floors and rooms per floor)
+  - Floor dropdown dynamically displays only floors that have remaining room quota
+  - Real-time tracking of added rooms per floor
+  - When the specified number of rooms for a floor is reached, that floor is automatically removed from the floor selection dropdown
+  - Visual indicator showing remaining room slots per floor (e.g., Floor 1: 3/5 rooms added)\n  - Prevents adding more rooms than originally specified in property details
+  - Validation message if user attempts to exceed floor room limit
+  - Floor-wise room counter displayed during room addition process
+
 - **For PG/Hostel Properties:**
-  - Add individual rooms with following details:\n    - Floor number
+  - Add individual rooms with following details:
+    - Floor number (dropdown populated from property details, showing only floors with available room slots)
     - Room number/name
     - Sharing type (Single sharing, Double sharing, Triple sharing, Four sharing, Dormitory)
     - Number of beds in room
-    - Rent per seat/bed\n    - Room size (in sq ft)
+    - Rent per seat/bed
+    - Room size (in sq ft)
     - Room-specific amenities (AC, Attached bathroom, Balcony, Window, Fan, Light, etc.)
     - Current occupancy status
-    - Available seats
-    - Room images upload (multiple images per room)
+    - Available seats\n    - Room images upload (multiple images per room)
     - Room description
 - **For Flat/Apartment Properties:**
-  - Add room details:
+  - Add room details:\n    - Floor number (dropdown with floor quota validation)
     - Room type (Bedroom, Living room, Kitchen, Bathroom, Balcony)\n    - Room size (in sq ft)
-    - Room-specific amenities
-    - Room images upload (multiple images per room)
-- **For Vacant Room Space:**
+    - Room-specific amenities\n    - Room images upload (multiple images per room)\n- **For Vacant Room Space:**
+  - Floor number (dropdown with floor quota validation)
   - Room number/identifier
-  - Room size
-  - Current status (Available/Occupied)
-  - Room images upload
-- Room editing and deletion capabilities
-- Bulk room addition option for similar room types
+  - Room size\n  - Current status (Available/Occupied)
+  - Room images upload\n- Room editing and deletion capabilities (with automatic floor quota recalculation)
+- Bulk room addition option for similar room types (with floor quota validation)
 - Room status management (Available/Occupied/Under Maintenance)
+- Dashboard showing floor-wise room addition progress
 
 ### 2.4 Tenant Management System
 - Add tenant information:\n  - Tenant name
   - Contact details
-  - ID proof
-  - Check-in date
+  - ID proof\n  - Check-in date
   - Room assignment (owner can specify which room the tenant has booked)
   - Seat assignment (for PG/Hostel shared rooms)
 - Real-time occupancy update upon tenant room assignment
-- Tenant profile management
-- Tenant history tracking\n- Check-out management with automatic occupancy status update
-
-### 2.5 Real-Time Room Booking System
+- Tenant profile management\n- Tenant history tracking
+- Check-out management with automatic occupancy status update
+\n### 2.5 Real-Time Room Booking System
 - Live booking interface similar to movie booking systems
 - Visual room and seat selection (for PG/Hostel)
 - Display of room sharing type and rent per seat
@@ -176,8 +180,7 @@ A professional management software designed for property owners of PG, hostels, 
 - Seat-level booking for shared accommodations
 
 ### 2.6 Enhanced Cinema-Style Visual Real-Time Occupancy Dashboard
-- **Movie Theater Inspired Visual Interface**
-  - Cinema hall seating layout style visualization
+- **Movie Theater Inspired Visual Interface**\n  - Cinema hall seating layout style visualization
   - Property structure displayed as theater screen (property name/info at top)
   - Floor-wise sections displayed as theater rows
   - Rooms displayed as seat groups within each floor row
@@ -247,7 +250,8 @@ A professional management software designed for property owners of PG, hostels, 
   - Adapts to screen size while maintaining cinema-style layout
   - Mobile-optimized touch interactions
   - Tablet view with optimized spacing
-\n- **Real-Time Updates:**
+
+- **Real-Time Updates:**
   - Instant visual update when tenant is assigned\n  - Smooth color transition animations
   - Live sync across multiple devices
   - Notification badges for recent changes
@@ -257,8 +261,7 @@ A professional management software designed for property owners of PG, hostels, 
 - Contract management
 - Booking history
 - Check-in/check-out management
-- Seat allocation management (for PG/Hostel)
-- Room transfer requests
+- Seat allocation management (for PG/Hostel)\n- Room transfer requests
 \n### 2.8 Analytics and Reports
 - Occupancy rate reports (property-wise, floor-wise, and room-wise)
 - Revenue analysis (total and per room/seat)
@@ -289,16 +292,17 @@ A professional management software designed for property owners of PG, hostels, 
 - Clear navigation between steps
 - Validation and error messages
 - Responsive design for all devices
-- Intuitive room management interface
+- Intuitive room management interface with floor quota validation
 - Cinema-style visual room and seat layout display
-- Easy image upload with preview
-- Drag-and-drop functionality for image uploads
+- Easy image upload with preview\n- Drag-and-drop functionality for image uploads
 - Interactive floor, room, and seat-level visualization
 - Real-time occupancy status updates with smooth animations
 - Seamless resume experience from saved progress
 - Movie theater inspired seat selection experience
 - Hover and click interactions for detailed information
 - Zoom, pan, and navigation controls for large properties
+- Visual feedback for floor room quota limits
+- Clear indicators for remaining room slots per floor
 \n## 5. Technical Requirements
 - Responsive web application
 - Real-time data synchronization
@@ -323,8 +327,10 @@ A professional management software designed for property owners of PG, hostels, 
 - Smooth animation libraries for status transitions
 - Touch-optimized interactions for mobile devices
 - Scalable vector graphics for zoom functionality
-
-## 6. Geographic Scope
+- Floor-wise room quota tracking and validation logic
+- Dynamic dropdown population based on remaining floor capacity
+- Real-time room counter per floor
+\n## 6. Geographic Scope
 - Application operates exclusively in India
 - State dropdown includes all Indian states and union territories
 - City dropdown dynamically populated based on selected state
@@ -335,17 +341,24 @@ A professional management software designed for property owners of PG, hostels, 
 4. System auto-saves progress at each step
 5. Owner can manually save draft at any point and resume later
 6. Owner inputs floor details (total floors and rooms per floor)
-7. System auto-calculates total rooms\n8. Owner completes property listing and submits
+7. System auto-calculates total rooms and stores floor-wise room quota
+8. Owner completes property listing and submits
 9. Owner proceeds to add individual rooms with specific details
-10. For PG/Hostel: Owner specifies sharing type, rent per seat, and food inclusion for each room
-11. Owner uploads images for each room
-12. Rooms become available for booking once added
-13. Owner adds tenant information and assigns specific room and seat
-14. System updates occupancy status in real-time upon tenant assignment
-15. Enhanced cinema-style visual occupancy dashboard displays:
+10. System fetches floor configuration from property details
+11. Floor dropdown displays only floors with remaining room quota
+12. System shows visual indicator of remaining room slots per floor (e.g., Floor 1: 3/5 rooms added)\n13. When owner adds a room, system decrements the available room count for that floor
+14. Once a floor reaches its room limit, that floor is automatically removed from the floor selection dropdown
+15. System validates and prevents adding more rooms than specified for each floor
+16. For PG/Hostel: Owner specifies sharing type, rent per seat, and food inclusion for each room
+17. Owner uploads images for each room
+18. Rooms become available for booking once added\n19. Owner adds tenant information and assigns specific room and seat
+20. System updates occupancy status in real-time upon tenant assignment
+21. Enhanced cinema-style visual occupancy dashboard displays:
     - Property layout as theater screen
     - Floors as theater rows
     - Rooms as seat groups\n    - Individual beds/seats as cinema seat icons
     - Real-time color-coded occupancy status for each seat/bed
-16. Owner manages bookings, tenants, and property operations through dashboard\n17. Real-time occupancy dashboard updates automatically with smooth animations for every change
-18. Owner can interact with visual dashboard to view detailed information by hovering or clicking on seats/rooms
+22. Owner manages bookings, tenants, and property operations through dashboard
+23. Real-time occupancy dashboard updates automatically with smooth animations for every change
+24. Owner can interact with visual dashboard to view detailed information by hovering or clicking on seats/rooms
+25. If owner edits or deletes rooms, system automatically recalculates floor quota and updates available floors in dropdown

@@ -66,6 +66,47 @@ export default function RoomManagement() {
     }
   }, [id]);
 
+  // Calculate available floors based on property configuration
+  const getAvailableFloors = () => {
+    if (!property) return [];
+
+    const numberOfFloors = property.number_of_floors || 0;
+    const roomsPerFloor = property.rooms_per_floor || 0;
+
+    if (numberOfFloors === 0 || roomsPerFloor === 0) {
+      return [];
+    }
+
+    // Count rooms per floor
+    const roomCountByFloor: Record<number, number> = {};
+    rooms.forEach((room) => {
+      const floor = room.floor || 0;
+      roomCountByFloor[floor] = (roomCountByFloor[floor] || 0) + 1;
+    });
+
+    // Generate available floors (0 to numberOfFloors-1)
+    const availableFloors: Array<{ floor: number; available: number; total: number }> = [];
+    for (let i = 0; i < numberOfFloors; i++) {
+      const currentCount = roomCountByFloor[i] || 0;
+      const available = roomsPerFloor - currentCount;
+      
+      // Only include floors that have space available
+      if (available > 0 || (editingRoom && editingRoom.floor === i)) {
+        availableFloors.push({
+          floor: i,
+          available,
+          total: roomsPerFloor,
+        });
+      }
+    }
+
+    return availableFloors;
+  };
+
+  const availableFloors = getAvailableFloors();
+  const totalRoomsAllowed = (property?.number_of_floors || 0) * (property?.rooms_per_floor || 0);
+  const canAddMoreRooms = rooms.length < totalRoomsAllowed;
+
   const loadData = async () => {
     try {
       setLoading(true);
@@ -275,11 +316,42 @@ export default function RoomManagement() {
       return;
     }
 
+    // Validate floor selection
+    if (roomForm.floor === null || roomForm.floor === undefined) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please select a floor',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Check if adding a new room would exceed total rooms limit
+    if (!editingRoom && !canAddMoreRooms) {
+      toast({
+        title: 'Room Limit Reached',
+        description: `You can only add ${totalRoomsAllowed} rooms (${property?.number_of_floors} floors × ${property?.rooms_per_floor} rooms per floor)`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Check if the selected floor has reached its limit
+    const selectedFloorData = availableFloors.find(f => f.floor === roomForm.floor);
+    if (!editingRoom && selectedFloorData && selectedFloorData.available <= 0) {
+      toast({
+        title: 'Floor Full',
+        description: `Floor ${roomForm.floor} already has ${selectedFloorData.total} rooms. Please select another floor.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
       const roomData: any = {
         property_id: id!,
         room_number: roomForm.room_number,
-        floor: roomForm.floor || null,
+        floor: roomForm.floor,
         sharing_type: roomForm.sharing_type || null,
         capacity: roomForm.capacity,
         price: roomForm.price,
@@ -351,7 +423,10 @@ export default function RoomManagement() {
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={resetForm}>
+            <Button 
+              onClick={resetForm}
+              disabled={!canAddMoreRooms || availableFloors.length === 0}
+            >
               <Plus className="mr-2 h-4 w-4" />
               Add Room
             </Button>
@@ -368,6 +443,48 @@ export default function RoomManagement() {
               {/* Basic Information */}
               <div className="space-y-4">
                 <h3 className="font-semibold">Basic Information</h3>
+                
+                {/* Property Configuration Info */}
+                {property && (
+                  <div className="p-4 bg-muted rounded-lg border">
+                    <div className="flex items-center justify-between text-sm">
+                      <div>
+                        <p className="font-medium">Property Configuration</p>
+                        <p className="text-muted-foreground mt-1">
+                          {property.number_of_floors} {property.number_of_floors === 1 ? 'Floor' : 'Floors'} × 
+                          {' '}{property.rooms_per_floor} Rooms = 
+                          {' '}{totalRoomsAllowed} Total Rooms
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-lg">{rooms.length}/{totalRoomsAllowed}</p>
+                        <p className="text-xs text-muted-foreground">Rooms Added</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Show warning if no rooms can be added */}
+                {!canAddMoreRooms && !editingRoom && (
+                  <div className="p-4 bg-destructive/10 border border-destructive rounded-lg">
+                    <p className="text-sm text-destructive font-medium">
+                      ⚠️ Room limit reached! You have added all {totalRoomsAllowed} rooms allowed for this property.
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      To add more rooms, update the property's floor and room configuration.
+                    </p>
+                  </div>
+                )}
+
+                {/* Show warning if no floors available */}
+                {availableFloors.length === 0 && !editingRoom && canAddMoreRooms && (
+                  <div className="p-4 bg-warning/10 border border-warning rounded-lg">
+                    <p className="text-sm text-warning font-medium">
+                      ⚠️ All floors are full! Each floor has reached its {property?.rooms_per_floor} room limit.
+                    </p>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="room_number">Room Number *</Label>
@@ -380,16 +497,40 @@ export default function RoomManagement() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="floor">Floor</Label>
-                    <Input
-                      id="floor"
-                      type="number"
-                      placeholder="e.g., 1"
-                      value={roomForm.floor || ''}
-                      onChange={(e) =>
-                        setRoomForm({ ...roomForm, floor: parseInt(e.target.value) || 0 })
-                      }
-                    />
+                    <Label htmlFor="floor">Floor *</Label>
+                    {availableFloors.length > 0 ? (
+                      <Select
+                        value={roomForm.floor?.toString() || ''}
+                        onValueChange={(value) =>
+                          setRoomForm({ ...roomForm, floor: parseInt(value) })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select floor" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableFloors.map((floorData) => (
+                            <SelectItem key={floorData.floor} value={floorData.floor.toString()}>
+                              {floorData.floor === 0 ? 'Ground Floor' : `Floor ${floorData.floor}`}
+                              {' '}({floorData.available}/{floorData.total} available)
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Input
+                        id="floor"
+                        type="number"
+                        placeholder="No floors available"
+                        disabled
+                        className="bg-muted"
+                      />
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      {availableFloors.length > 0 
+                        ? 'Only floors with available space are shown'
+                        : 'All floors are full or property not configured'}
+                    </p>
                   </div>
                 </div>
               </div>
