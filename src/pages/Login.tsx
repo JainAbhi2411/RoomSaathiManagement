@@ -79,11 +79,11 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
       <div className="w-full max-w-md animate-fade-in">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center p-4 bg-primary rounded-2xl shadow-2xl mb-4">
-            <Building2 className="h-12 w-12 text-primary-foreground" />
+          <div className="inline-flex items-center justify-center p-4 bg-gradient-to-br from-primary to-secondary rounded-2xl shadow-2xl mb-4">
+            <Building2 className="h-12 w-12 text-white" />
           </div>
           <h1 className="text-4xl font-bold gradient-text mb-2">Roomsaathi</h1>
-          <p className="text-muted-foreground">Property Management Platform</p>
+          <p className="text-muted-foreground">Professional Property Management</p>
         </div>
 
         <Card className="shadow-2xl border-2">

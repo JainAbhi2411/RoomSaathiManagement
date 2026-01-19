@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -15,17 +16,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Upload, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Upload, X, Loader2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { INDIAN_STATES_CITIES, PROPERTY_AMENITIES, FURNISHING_STATUS, TENANT_TYPES, PROPERTY_AGE } from '@/data/indiaData';
 
 const propertyTypes: { value: PropertyType; label: string }[] = [
-  { value: 'pg', label: 'PG' },
+  { value: 'pg', label: 'PG (Paying Guest)' },
   { value: 'hostel', label: 'Hostel' },
-  { value: 'flat', label: 'Flat' },
+  { value: 'flat', label: 'Flat/Apartment' },
   { value: 'mess', label: 'Mess' },
   { value: 'vacant_room', label: 'Vacant Room' },
+];
+
+const STEPS = [
+  { id: 1, title: 'Basic Information', description: 'Property name and type' },
+  { id: 2, title: 'Location Details', description: 'Address and location' },
+  { id: 3, title: 'Property Details', description: 'Rooms and pricing' },
+  { id: 4, title: 'Amenities & Features', description: 'Facilities and amenities' },
+  { id: 5, title: 'Additional Information', description: 'Rules and policies' },
+  { id: 6, title: 'Images', description: 'Property photos' },
 ];
 
 export default function PropertyForm() {
@@ -34,27 +45,60 @@ export default function PropertyForm() {
   const { user } = useAuth();
   const { toast } = useToast();
 
+  const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+
+  // Form state
   const [formData, setFormData] = useState({
+    // Step 1: Basic Information
     name: '',
     property_type: 'pg' as PropertyType,
     description: '',
-    address: '',
-    city: '',
+
+    // Step 2: Location
     state: '',
+    city: '',
+    address: '',
     pincode: '',
+
+    // Step 3: Property Details
     total_rooms: 0,
-    amenities: '',
+    monthly_rent: 0,
+    security_deposit: 0,
+    maintenance_charges: 0,
+    furnishing_status: '',
+    property_age: '',
+
+    // Step 4: Amenities
+    amenities: [] as string[],
+
+    // Step 5: Additional Information
+    preferred_tenant: '',
+    property_rules: '',
+    notice_period: '',
+    availability_date: '',
+    contact_number: '',
+    contact_email: '',
   });
+
   const [images, setImages] = useState<string[]>([]);
+  const [availableCities, setAvailableCities] = useState<string[]>([]);
 
   useEffect(() => {
     if (id) {
       loadProperty();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (formData.state) {
+      setAvailableCities(INDIAN_STATES_CITIES[formData.state as keyof typeof INDIAN_STATES_CITIES] || []);
+    } else {
+      setAvailableCities([]);
+    }
+  }, [formData.state]);
 
   const loadProperty = async () => {
     try {
@@ -64,12 +108,23 @@ export default function PropertyForm() {
           name: property.name,
           property_type: property.property_type,
           description: property.description || '',
-          address: property.address,
-          city: property.city,
           state: property.state,
+          city: property.city,
+          address: property.address,
           pincode: property.pincode,
           total_rooms: property.total_rooms,
-          amenities: property.amenities?.join(', ') || '',
+          monthly_rent: 0,
+          security_deposit: 0,
+          maintenance_charges: 0,
+          furnishing_status: '',
+          property_age: '',
+          amenities: property.amenities || [],
+          preferred_tenant: '',
+          property_rules: '',
+          notice_period: '',
+          availability_date: '',
+          contact_number: '',
+          contact_email: '',
         });
         setImages(property.images || []);
       }
@@ -137,9 +192,9 @@ export default function PropertyForm() {
     try {
       setUploading(true);
       setProgress(0);
-      
+
       let file = files[0];
-      
+
       if (file.size > 1048576) {
         file = await compressImage(file);
       }
@@ -181,16 +236,65 @@ export default function PropertyForm() {
     setImages(images.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAmenityToggle = (amenityId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      amenities: prev.amenities.includes(amenityId)
+        ? prev.amenities.filter((id) => id !== amenityId)
+        : [...prev.amenities, amenityId],
+    }));
+  };
+
+  const validateStep = (step: number): boolean => {
+    switch (step) {
+      case 1:
+        if (!formData.name || !formData.property_type) {
+          toast({
+            title: 'Validation Error',
+            description: 'Please fill in all required fields',
+            variant: 'destructive',
+          });
+          return false;
+        }
+        break;
+      case 2:
+        if (!formData.state || !formData.city || !formData.address || !formData.pincode) {
+          toast({
+            title: 'Validation Error',
+            description: 'Please fill in all location details',
+            variant: 'destructive',
+          });
+          return false;
+        }
+        break;
+      case 3:
+        if (formData.total_rooms <= 0) {
+          toast({
+            title: 'Validation Error',
+            description: 'Please enter valid property details',
+            variant: 'destructive',
+          });
+          return false;
+        }
+        break;
+    }
+    return true;
+  };
+
+  const nextStep = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
+    }
+  };
+
+  const prevStep = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleSubmit = async () => {
     setLoading(true);
 
     try {
-      const amenitiesArray = formData.amenities
-        .split(',')
-        .map((a) => a.trim())
-        .filter((a) => a);
-
       const propertyData: Partial<Property> = {
         owner_id: user!.id,
         name: formData.name,
@@ -201,7 +305,7 @@ export default function PropertyForm() {
         state: formData.state,
         pincode: formData.pincode,
         total_rooms: formData.total_rooms,
-        amenities: amenitiesArray.length > 0 ? amenitiesArray : null,
+        amenities: formData.amenities.length > 0 ? formData.amenities : null,
         images: images.length > 0 ? images : null,
       };
 
@@ -232,39 +336,76 @@ export default function PropertyForm() {
     }
   };
 
+  const progressPercentage = (currentStep / STEPS.length) * 100;
+
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w-4xl mx-auto animate-fade-in">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+        <Button variant="ghost" size="icon" onClick={() => navigate('/properties')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl xl:text-3xl font-bold text-foreground">
-            {id ? 'Edit Property' : 'Add Property'}
+            {id ? 'Edit Property' : 'Add New Property'}
           </h1>
-          <p className="text-muted-foreground mt-1">
-            {id ? 'Update property information' : 'Create a new property listing'}
+          <p className="text-muted-foreground">
+            Step {currentStep} of {STEPS.length}: {STEPS[currentStep - 1].title}
           </p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <Card>
-          <CardHeader>
-            <CardTitle>Property Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+      {/* Progress Bar */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="space-y-4">
+            <Progress value={progressPercentage} className="h-2" />
+            <div className="grid grid-cols-2 xl:grid-cols-6 gap-2">
+              {STEPS.map((step) => (
+                <div
+                  key={step.id}
+                  className={`text-center p-2 rounded-lg transition-all ${
+                    step.id === currentStep
+                      ? 'bg-primary text-primary-foreground'
+                      : step.id < currentStep
+                      ? 'bg-secondary text-secondary-foreground'
+                      : 'bg-muted text-muted-foreground'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    {step.id < currentStep ? (
+                      <Check className="h-4 w-4" />
+                    ) : (
+                      <span className="font-bold">{step.id}</span>
+                    )}
+                    <span className="text-xs hidden xl:inline">{step.title}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Form Steps */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{STEPS[currentStep - 1].title}</CardTitle>
+          <CardDescription>{STEPS[currentStep - 1].description}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Step 1: Basic Information */}
+          {currentStep === 1 && (
+            <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Property Name *</Label>
                 <Input
                   id="name"
+                  placeholder="e.g., Sunshine PG for Boys"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                 />
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="property_type">Property Type *</Label>
                 <Select
@@ -285,141 +426,381 @@ export default function PropertyForm() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                rows={3}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="address">Address *</Label>
-              <Input
-                id="address"
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="city">City *</Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  placeholder="Describe your property..."
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  rows={4}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Location Details */}
+          {currentStep === 2 && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="state">State *</Label>
+                  <Select
+                    value={formData.state}
+                    onValueChange={(value) => {
+                      setFormData({ ...formData, state: value, city: '' });
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select state" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.keys(INDIAN_STATES_CITIES).map((state) => (
+                        <SelectItem key={state} value={state}>
+                          {state}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="city">City *</Label>
+                  <Select
+                    value={formData.city}
+                    onValueChange={(value) => setFormData({ ...formData, city: value })}
+                    disabled={!formData.state}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select city" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableCities.map((city) => (
+                        <SelectItem key={city} value={city}>
+                          {city}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="address">Full Address *</Label>
+                <Textarea
+                  id="address"
+                  placeholder="Enter complete address with landmarks"
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  rows={3}
                   required
                 />
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="state">State *</Label>
-                <Input
-                  id="state"
-                  value={formData.state}
-                  onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                  required
-                />
-              </div>
-
               <div className="space-y-2">
                 <Label htmlFor="pincode">Pincode *</Label>
                 <Input
                   id="pincode"
+                  placeholder="e.g., 110001"
                   value={formData.pincode}
                   onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
                   required
                 />
               </div>
             </div>
+          )}
 
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="total_rooms">Total Rooms *</Label>
-                <Input
-                  id="total_rooms"
-                  type="number"
-                  min="0"
-                  value={formData.total_rooms}
-                  onChange={(e) =>
-                    setFormData({ ...formData, total_rooms: parseInt(e.target.value) || 0 })
-                  }
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="amenities">Amenities (comma-separated)</Label>
-                <Input
-                  id="amenities"
-                  value={formData.amenities}
-                  onChange={(e) => setFormData({ ...formData, amenities: e.target.value })}
-                  placeholder="WiFi, Parking, AC, etc."
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Property Images</Label>
-              <div className="space-y-4">
-                {images.length > 0 && (
-                  <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-                    {images.map((image, index) => (
-                      <div key={index} className="relative aspect-video rounded-lg overflow-hidden bg-muted">
-                        <img src={image} alt={`Property ${index + 1}`} className="w-full h-full object-cover" />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-2 right-2 h-6 w-6"
-                          onClick={() => removeImage(index)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <div>
+          {/* Step 3: Property Details */}
+          {currentStep === 3 && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="total_rooms">Total Rooms *</Label>
                   <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    disabled={uploading}
-                    className="hidden"
-                    id="image-upload"
+                    id="total_rooms"
+                    type="number"
+                    min="1"
+                    placeholder="e.g., 10"
+                    value={formData.total_rooms || ''}
+                    onChange={(e) =>
+                      setFormData({ ...formData, total_rooms: parseInt(e.target.value) || 0 })
+                    }
+                    required
                   />
-                  <Label htmlFor="image-upload">
-                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors">
-                      <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground">
-                        {uploading ? 'Uploading...' : 'Click to upload image'}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">Max size: 1MB</p>
-                    </div>
-                  </Label>
-                  {uploading && <Progress value={progress} className="mt-2" />}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="monthly_rent">Monthly Rent (₹)</Label>
+                  <Input
+                    id="monthly_rent"
+                    type="number"
+                    min="0"
+                    placeholder="e.g., 8000"
+                    value={formData.monthly_rent || ''}
+                    onChange={(e) =>
+                      setFormData({ ...formData, monthly_rent: parseInt(e.target.value) || 0 })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="security_deposit">Security Deposit (₹)</Label>
+                  <Input
+                    id="security_deposit"
+                    type="number"
+                    min="0"
+                    placeholder="e.g., 10000"
+                    value={formData.security_deposit || ''}
+                    onChange={(e) =>
+                      setFormData({ ...formData, security_deposit: parseInt(e.target.value) || 0 })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="maintenance_charges">Maintenance Charges (₹)</Label>
+                  <Input
+                    id="maintenance_charges"
+                    type="number"
+                    min="0"
+                    placeholder="e.g., 1000"
+                    value={formData.maintenance_charges || ''}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        maintenance_charges: parseInt(e.target.value) || 0,
+                      })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="furnishing_status">Furnishing Status</Label>
+                  <Select
+                    value={formData.furnishing_status}
+                    onValueChange={(value) => setFormData({ ...formData, furnishing_status: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select furnishing status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FURNISHING_STATUS.map((status) => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="property_age">Property Age</Label>
+                  <Select
+                    value={formData.property_age}
+                    onValueChange={(value) => setFormData({ ...formData, property_age: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select property age" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PROPERTY_AGE.map((age) => (
+                        <SelectItem key={age.value} value={age.value}>
+                          {age.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
+          )}
 
-            <div className="flex gap-4 pt-4">
-              <Button type="submit" disabled={loading || uploading}>
-                {loading ? 'Saving...' : id ? 'Update Property' : 'Create Property'}
-              </Button>
-              <Button type="button" variant="outline" onClick={() => navigate(-1)}>
-                Cancel
-              </Button>
+          {/* Step 4: Amenities & Features */}
+          {currentStep === 4 && (
+            <div className="space-y-4">
+              <Label>Select Amenities</Label>
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+                {PROPERTY_AMENITIES.map((amenity) => (
+                  <div key={amenity.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={amenity.id}
+                      checked={formData.amenities.includes(amenity.id)}
+                      onCheckedChange={() => handleAmenityToggle(amenity.id)}
+                    />
+                    <Label
+                      htmlFor={amenity.id}
+                      className="text-sm font-normal cursor-pointer"
+                    >
+                      {amenity.label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
             </div>
-          </CardContent>
-        </Card>
-      </form>
+          )}
+
+          {/* Step 5: Additional Information */}
+          {currentStep === 5 && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="preferred_tenant">Preferred Tenant Type</Label>
+                  <Select
+                    value={formData.preferred_tenant}
+                    onValueChange={(value) => setFormData({ ...formData, preferred_tenant: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select tenant type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TENANT_TYPES.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="notice_period">Notice Period (days)</Label>
+                  <Input
+                    id="notice_period"
+                    placeholder="e.g., 30"
+                    value={formData.notice_period}
+                    onChange={(e) => setFormData({ ...formData, notice_period: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="availability_date">Available From</Label>
+                  <Input
+                    id="availability_date"
+                    type="date"
+                    value={formData.availability_date}
+                    onChange={(e) =>
+                      setFormData({ ...formData, availability_date: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contact_number">Contact Number</Label>
+                  <Input
+                    id="contact_number"
+                    type="tel"
+                    placeholder="e.g., +91 9876543210"
+                    value={formData.contact_number}
+                    onChange={(e) => setFormData({ ...formData, contact_number: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="contact_email">Contact Email</Label>
+                <Input
+                  id="contact_email"
+                  type="email"
+                  placeholder="e.g., owner@example.com"
+                  value={formData.contact_email}
+                  onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="property_rules">Property Rules & Policies</Label>
+                <Textarea
+                  id="property_rules"
+                  placeholder="Enter property rules, policies, and any other important information..."
+                  value={formData.property_rules}
+                  onChange={(e) => setFormData({ ...formData, property_rules: e.target.value })}
+                  rows={4}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Step 6: Images */}
+          {currentStep === 6 && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Property Images</Label>
+                <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="image-upload"
+                    disabled={uploading}
+                  />
+                  <label htmlFor="image-upload" className="cursor-pointer">
+                    <div className="flex flex-col items-center gap-2">
+                      <Upload className="h-12 w-12 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground">
+                        Click to upload property images
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        PNG, JPG, WEBP up to 10MB (auto-compressed)
+                      </p>
+                    </div>
+                  </label>
+                </div>
+                {uploading && (
+                  <div className="space-y-2">
+                    <Progress value={progress} />
+                    <p className="text-sm text-center text-muted-foreground">Uploading...</p>
+                  </div>
+                )}
+              </div>
+
+              {images.length > 0 && (
+                <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
+                  {images.map((image, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={image}
+                        alt={`Property ${index + 1}`}
+                        className="w-full h-40 object-cover rounded-lg"
+                      />
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => removeImage(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Navigation Buttons */}
+      <div className="flex items-center justify-between">
+        <Button
+          variant="outline"
+          onClick={prevStep}
+          disabled={currentStep === 1 || loading}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Previous
+        </Button>
+        <div className="text-sm text-muted-foreground">
+          Step {currentStep} of {STEPS.length}
+        </div>
+        {currentStep < STEPS.length ? (
+          <Button onClick={nextStep} disabled={loading}>
+            Next
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        ) : (
+          <Button onClick={handleSubmit} disabled={loading}>
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Check className="mr-2 h-4 w-4" />
+                {id ? 'Update Property' : 'Create Property'}
+              </>
+            )}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
