@@ -677,9 +677,10 @@ export default function PropertyForm() {
                       type="number"
                       min="1"
                       placeholder="e.g., 3"
-                      value={formData.number_of_floors || ''}
+                      value={formData.number_of_floors}
                       onChange={(e) => {
-                        const floors = parseInt(e.target.value) || 1;
+                        const value = e.target.value;
+                        const floors = value === '' ? 1 : parseInt(value) || 1;
                         setFormData({
                           ...formData,
                           number_of_floors: floors,
@@ -696,9 +697,10 @@ export default function PropertyForm() {
                       type="number"
                       min="1"
                       placeholder="e.g., 4"
-                      value={formData.rooms_per_floor || ''}
+                      value={formData.rooms_per_floor}
                       onChange={(e) => {
-                        const roomsPerFloor = parseInt(e.target.value) || 1;
+                        const value = e.target.value;
+                        const roomsPerFloor = value === '' ? 1 : parseInt(value) || 1;
                         setFormData({
                           ...formData,
                           rooms_per_floor: roomsPerFloor,
