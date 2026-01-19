@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { getTenants, createTenant, updateTenant, deleteTenant, getProperties } from '@/db/api';
-import type { Tenant, Property } from '@/types';
+import { getTenants, createTenant, updateTenant, deleteTenant, getProperties, getRoomsByProperty, updateRoom } from '@/db/api';
+import type { Tenant, Property, Room } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,11 +49,13 @@ export default function Tenants() {
   const { toast } = useToast();
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTenant, setEditingTenant] = useState<Tenant | null>(null);
   const [tenantForm, setTenantForm] = useState({
     property_id: '',
+    room_id: '',
     full_name: '',
     email: '',
     phone: '',
@@ -84,11 +86,12 @@ export default function Tenants() {
     }
   };
 
-  const handleOpenDialog = (tenant?: Tenant) => {
+  const handleOpenDialog = async (tenant?: Tenant) => {
     if (tenant) {
       setEditingTenant(tenant);
       setTenantForm({
         property_id: tenant.property_id,
+        room_id: tenant.room_id || '',
         full_name: tenant.full_name,
         email: tenant.email || '',
         phone: tenant.phone,
@@ -96,10 +99,16 @@ export default function Tenants() {
         id_proof_number: tenant.id_proof_number || '',
         emergency_contact: tenant.emergency_contact || '',
       });
+      // Load rooms for the property
+      if (tenant.property_id) {
+        const roomsData = await getRoomsByProperty(tenant.property_id);
+        setRooms(roomsData);
+      }
     } else {
       setEditingTenant(null);
       setTenantForm({
         property_id: '',
+        room_id: '',
         full_name: '',
         email: '',
         phone: '',
@@ -107,14 +116,26 @@ export default function Tenants() {
         id_proof_number: '',
         emergency_contact: '',
       });
+      setRooms([]);
     }
     setDialogOpen(true);
+  };
+
+  const handlePropertyChange = async (propertyId: string) => {
+    setTenantForm({ ...tenantForm, property_id: propertyId, room_id: '' });
+    if (propertyId) {
+      const roomsData = await getRoomsByProperty(propertyId);
+      setRooms(roomsData);
+    } else {
+      setRooms([]);
+    }
   };
 
   const handleSaveTenant = async () => {
     try {
       const tenantData = {
         property_id: tenantForm.property_id,
+        room_id: tenantForm.room_id || null,
         full_name: tenantForm.full_name,
         email: tenantForm.email || null,
         phone: tenantForm.phone,
@@ -123,14 +144,56 @@ export default function Tenants() {
         emergency_contact: tenantForm.emergency_contact || null,
       };
 
+      // Get the old room_id if editing
+      const oldRoomId = editingTenant?.room_id;
+      const newRoomId = tenantForm.room_id;
+
       if (editingTenant) {
         await updateTenant(editingTenant.id, tenantData);
+        
+        // Update room occupancy if room changed
+        if (oldRoomId !== newRoomId) {
+          // Decrease occupancy of old room
+          if (oldRoomId) {
+            const oldRoom = rooms.find(r => r.id === oldRoomId);
+            if (oldRoom) {
+              await updateRoom(oldRoomId, {
+                occupied_seats: Math.max(0, (oldRoom.occupied_seats || 0) - 1),
+                is_occupied: (oldRoom.occupied_seats || 0) - 1 > 0,
+              });
+            }
+          }
+          
+          // Increase occupancy of new room
+          if (newRoomId) {
+            const newRoom = rooms.find(r => r.id === newRoomId);
+            if (newRoom) {
+              await updateRoom(newRoomId, {
+                occupied_seats: (newRoom.occupied_seats || 0) + 1,
+                is_occupied: true,
+              });
+            }
+          }
+        }
+        
         toast({
           title: 'Success',
           description: 'Tenant updated successfully',
         });
       } else {
         await createTenant(tenantData);
+        
+        // Update room occupancy for new tenant
+        if (newRoomId) {
+          const room = rooms.find(r => r.id === newRoomId);
+          if (room) {
+            await updateRoom(newRoomId, {
+              occupied_seats: (room.occupied_seats || 0) + 1,
+              is_occupied: true,
+            });
+          }
+        }
+        
         toast({
           title: 'Success',
           description: 'Tenant created successfully',
@@ -193,7 +256,7 @@ export default function Tenants() {
                 <Label htmlFor="property_id">Property *</Label>
                 <Select
                   value={tenantForm.property_id}
-                  onValueChange={(value) => setTenantForm({ ...tenantForm, property_id: value })}
+                  onValueChange={handlePropertyChange}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a property" />
@@ -206,6 +269,42 @@ export default function Tenants() {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="col-span-2 space-y-2">
+                <Label htmlFor="room_id">Room (Optional)</Label>
+                <Select
+                  value={tenantForm.room_id}
+                  onValueChange={(value) => setTenantForm({ ...tenantForm, room_id: value })}
+                  disabled={!tenantForm.property_id}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={tenantForm.property_id ? "Select a room" : "Select property first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {rooms.filter(room => {
+                      // Show only rooms that are not fully occupied
+                      const property = properties.find(p => p.id === tenantForm.property_id);
+                      const isPgOrHostel = property?.property_type === 'pg' || property?.property_type === 'hostel';
+                      if (isPgOrHostel) {
+                        return (room.occupied_seats || 0) < room.capacity;
+                      }
+                      return !room.is_occupied;
+                    }).map((room) => {
+                      const availableSeats = room.capacity - (room.occupied_seats || 0);
+                      return (
+                        <SelectItem key={room.id} value={room.id}>
+                          Room {room.room_number} - Floor {room.floor || 0} 
+                          {room.sharing_type && ` (${room.sharing_type})`}
+                          {availableSeats > 0 && ` - ${availableSeats} seat${availableSeats > 1 ? 's' : ''} available`}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  {rooms.length === 0 && tenantForm.property_id && 'No rooms available for this property'}
+                  {!tenantForm.property_id && 'Select a property to see available rooms'}
+                </p>
               </div>
               <div className="col-span-2 space-y-2">
                 <Label htmlFor="full_name">Full Name *</Label>

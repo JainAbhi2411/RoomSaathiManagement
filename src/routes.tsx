@@ -7,6 +7,7 @@ import PropertyDetails from './pages/PropertyDetails';
 import RoomManagement from './pages/RoomManagement';
 import RoomBooking from './pages/RoomBooking';
 import VacancyDashboard from './pages/VacancyDashboard';
+import OccupancyDashboard from './pages/OccupancyDashboard';
 import Tenants from './pages/Tenants';
 import Payments from './pages/Payments';
 import Maintenance from './pages/Maintenance';
@@ -71,6 +72,11 @@ const routes: RouteConfig[] = [
     name: 'Vacancy Dashboard',
     path: '/vacancy',
     element: <VacancyDashboard />,
+  },
+  {
+    name: 'Occupancy Dashboard',
+    path: '/occupancy',
+    element: <OccupancyDashboard />,
   },
   {
     name: 'Tenants',

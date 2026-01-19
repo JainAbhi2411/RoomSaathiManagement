@@ -64,7 +64,9 @@ export default function PropertyForm() {
     pincode: '',
 
     // Step 3: Property Details
-    total_rooms: 0,
+    number_of_floors: 1,
+    rooms_per_floor: 1,
+    total_rooms: 1,
     monthly_rent: 0,
     security_deposit: 0,
     maintenance_charges: 0,
@@ -76,6 +78,7 @@ export default function PropertyForm() {
     property_size: 0,
     meal_plan: '',
     dormitory_capacity: 0,
+    food_included: false,
 
     // Step 4: Amenities
     amenities: [] as string[],
@@ -118,6 +121,8 @@ export default function PropertyForm() {
           city: property.city,
           address: property.address,
           pincode: property.pincode,
+          number_of_floors: property.number_of_floors || 1,
+          rooms_per_floor: property.rooms_per_floor || 1,
           total_rooms: property.total_rooms,
           monthly_rent: 0,
           security_deposit: 0,
@@ -128,6 +133,7 @@ export default function PropertyForm() {
           property_size: property.property_size || 0,
           meal_plan: property.meal_plan || '',
           dormitory_capacity: property.dormitory_capacity || 0,
+          food_included: property.food_included || false,
           amenities: property.amenities || [],
           preferred_tenant: '',
           property_rules: '',
@@ -314,6 +320,8 @@ export default function PropertyForm() {
         city: formData.city,
         state: formData.state,
         pincode: formData.pincode,
+        number_of_floors: formData.number_of_floors,
+        rooms_per_floor: formData.rooms_per_floor,
         total_rooms: formData.total_rooms,
         amenities: formData.amenities.length > 0 ? formData.amenities : null,
         images: images.length > 0 ? images : null,
@@ -321,6 +329,7 @@ export default function PropertyForm() {
         property_size: formData.property_size || null,
         meal_plan: formData.meal_plan || null,
         dormitory_capacity: formData.dormitory_capacity || null,
+        food_included: formData.food_included,
       };
 
       if (id) {
@@ -613,6 +622,34 @@ export default function PropertyForm() {
                 </div>
               )}
 
+              {formData.property_type === 'pg' && (
+                <div className="p-4 bg-secondary/10 rounded-lg border-2 border-secondary/20">
+                  <div className="flex items-start gap-2 mb-2">
+                    <div className="p-2 bg-secondary rounded-lg">
+                      <Check className="h-4 w-4 text-secondary-foreground" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-secondary">PG Amenities</h3>
+                      <div className="mt-3 flex items-center space-x-2">
+                        <Checkbox
+                          id="food_included"
+                          checked={formData.food_included}
+                          onCheckedChange={(checked) =>
+                            setFormData({ ...formData, food_included: checked as boolean })
+                          }
+                        />
+                        <Label htmlFor="food_included" className="cursor-pointer font-normal">
+                          Food/Meals Included
+                        </Label>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Check this if food is provided as part of the PG accommodation
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {(formData.property_type === 'pg' || formData.property_type === 'hostel') && (
                 <div className="p-4 bg-secondary/10 rounded-lg border-2 border-secondary/20">
                   <div className="flex items-start gap-2 mb-2">
@@ -631,22 +668,65 @@ export default function PropertyForm() {
 
               {/* Common Fields */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-lg">General Information</h3>
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                <h3 className="font-semibold text-lg">Floor & Room Configuration</h3>
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="total_rooms">Total Rooms *</Label>
+                    <Label htmlFor="number_of_floors">Number of Floors *</Label>
                     <Input
-                      id="total_rooms"
+                      id="number_of_floors"
                       type="number"
                       min="1"
-                      placeholder="e.g., 10"
-                      value={formData.total_rooms || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, total_rooms: parseInt(e.target.value) || 0 })
-                      }
+                      placeholder="e.g., 3"
+                      value={formData.number_of_floors || ''}
+                      onChange={(e) => {
+                        const floors = parseInt(e.target.value) || 1;
+                        setFormData({
+                          ...formData,
+                          number_of_floors: floors,
+                          total_rooms: floors * formData.rooms_per_floor,
+                        });
+                      }}
                       required
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="rooms_per_floor">Rooms per Floor *</Label>
+                    <Input
+                      id="rooms_per_floor"
+                      type="number"
+                      min="1"
+                      placeholder="e.g., 4"
+                      value={formData.rooms_per_floor || ''}
+                      onChange={(e) => {
+                        const roomsPerFloor = parseInt(e.target.value) || 1;
+                        setFormData({
+                          ...formData,
+                          rooms_per_floor: roomsPerFloor,
+                          total_rooms: formData.number_of_floors * roomsPerFloor,
+                        });
+                      }}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="total_rooms">Total Rooms (Auto-calculated)</Label>
+                    <Input
+                      id="total_rooms"
+                      type="number"
+                      value={formData.total_rooms}
+                      disabled
+                      className="bg-muted font-semibold"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {formData.number_of_floors} floors × {formData.rooms_per_floor} rooms = {formData.total_rooms} total
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Pricing Information</h3>
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="monthly_rent">
                       {formData.property_type === 'pg' || formData.property_type === 'hostel'

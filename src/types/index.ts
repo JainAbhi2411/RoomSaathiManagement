@@ -43,6 +43,9 @@ export interface Property {
   property_size: number | null;
   meal_plan: string | null;
   dormitory_capacity: number | null;
+  number_of_floors: number;
+  rooms_per_floor: number;
+  food_included: boolean;
   created_at: string;
   updated_at: string;
 }

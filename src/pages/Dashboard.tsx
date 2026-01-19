@@ -174,11 +174,16 @@ export default function Dashboard() {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <Card className="shadow-lg border-2">
+        <Card className="shadow-lg border-2 hover:border-primary/30 transition-all">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>Room Status</span>
-              <Badge variant="secondary">{stats?.totalRooms || 0} Total</Badge>
+              <Link to="/occupancy">
+                <Button variant="ghost" size="sm">
+                  View Details
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
             </CardTitle>
           </CardHeader>
           <CardContent>

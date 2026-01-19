@@ -24,6 +24,7 @@ import {
   LogOut,
   User,
   Grid3x3,
+  DoorOpen,
 } from 'lucide-react';
 
 interface AppLayoutProps {
@@ -34,6 +35,7 @@ const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Properties', href: '/properties', icon: Home },
   { name: 'Vacancy', href: '/vacancy', icon: Grid3x3 },
+  { name: 'Occupancy', href: '/occupancy', icon: DoorOpen },
   { name: 'Tenants', href: '/tenants', icon: Users },
   { name: 'Payments', href: '/payments', icon: CreditCard },
   { name: 'Maintenance', href: '/maintenance', icon: Wrench },
