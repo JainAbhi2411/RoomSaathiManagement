@@ -231,7 +231,7 @@ export default function Dashboard() {
                   ₹{stats?.monthlyRevenue.toLocaleString() || 0}
                 </div>
               </div>
-              <Link to="/payments">
+              <Link to="/rent-payments">
                 <Button variant="outline" className="w-full">
                   View All Payments
                   <ArrowRight className="ml-2 h-4 w-4" />

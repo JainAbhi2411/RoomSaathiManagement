@@ -47,8 +47,7 @@ A professional management software designed for property owners of PG, hostels, 
   - **Step 5: Pricing Details**
     - **For Flat/Apartment:**\n      - Monthly rent
       - Security deposit amount
-      - Maintenance charges
-      - Brokerage (if applicable)
+      - Maintenance charges\n      - Brokerage (if applicable)
     - **For PG/Hostel:**\n      - Rent structure per sharing type (to be defined during room addition)
       - Security deposit amount
       - Maintenance charges (included/separate)
@@ -173,7 +172,8 @@ A professional management software designed for property owners of PG, hostels, 
 - Visual room and seat selection (for PG/Hostel)
 - Display of room sharing type and rent per seat
 - Room-wise availability display
-- Instant booking confirmation\n- Booking status updates
+- Instant booking confirmation
+- Booking status updates
 - Seat-level booking for shared accommodations
 
 ### 2.6 Enhanced Cinema-Style Visual Real-Time Occupancy Dashboard
@@ -223,7 +223,8 @@ A professional management software designed for property owners of PG, hostels, 
   - Click on seat/bed for detailed information popup
   - Click on room group to see room-level details
   - Floor row headers clickable to expand/collapse floor view
-\n- **Visual Layout Controls:**
+
+- **Visual Layout Controls:**
   - Toggle between compact and expanded view
   - Zoom in/out functionality for large properties
   - Pan and scroll for navigation
@@ -320,61 +321,184 @@ A professional management software designed for property owners of PG, hostels, 
   - Owner can enable/disable automated reminders
   - Owner can manually trigger payment reminders for specific tenants
 
-#### 2.8.3 Payment Status Management Dashboard
-- **Payment Timeline Tracking Interface**
-  - Comprehensive payment management dashboard showing:
-    - List of all tenants with payment status
-    - Current month rent status (Paid/Pending/Overdue)
-    - Payment due date for each tenant
-    - Days remaining until due date or days overdue
-    - Payment history for each tenant
-    - Total outstanding amount across all tenants
-    - Total collected amount for current month
-    - Expected revenue vs actual revenue
-\n- **Payment Status Indicators**
-  - Color-coded payment status:
-    - Green: Payment received
-    - Yellow: Payment due soon (within 3 days)
-    - Orange: Payment due today\n    - Red: Payment overdue\n  - Visual indicators for payment status on tenant list
-  - Filter options: All tenants, Paid, Pending, Overdue
-  - Sort options: By due date, by tenant name, by payment status, by amount
-
-- **Manual Payment Recording**
+#### 2.8.3 Enhanced Payment Recording and Next Payment Indication System
+- **Payment Recording Interface**
   - Owner selects tenant from tenant list
   - Owner adds payment details including:
     - Rent amount (auto-populated from tenant's room/seat rent, editable)
-    - Payment date
-    - Payment method (Cash, Bank Transfer, UPI, Cheque, Online)
+    - Payment duration selection (dropdown: Monthly, Quarterly, Half-Yearly, Yearly, Custom)
+    - Payment date\n    - Payment method (Cash, Bank Transfer, UPI, Cheque, Online)
     - Transaction reference number (optional)
     - Receipt number (auto-generated)
     - Notes (optional)
-  - Owner can update payment details on monthly basis for each tenant
+  - System automatically calculates next payment due date based on selected duration:\n    - Monthly: Next payment due after 1 month from payment date
+    - Quarterly: Next payment due after 3 months from payment date
+    - Half-Yearly: Next payment due after 6 months from payment date\n    - Yearly: Next payment due after 12 months from payment date
+    - Custom: Owner can specify custom duration in months
+  - System displays calculated next payment due date before confirming payment
+  - Owner can update payment details on monthly or custom duration basis for each tenant
   - System automatically updates payment status upon recording
   - System sends automated WhatsApp confirmation message to tenant upon payment recording
   - Payment confirmation message includes:
     - Tenant name
     - Payment amount received
     - Payment date
-    - Receipt number
-    - Next payment due date
+    - Payment duration covered
+    - Receipt number\n    - Next payment due date
     - Thank you message
-\n- **Payment History and Records**
-  - Complete payment history for each tenant
-  - Month-wise payment records
-  - Payment receipt generation and download
-  - Payment summary reports
+\n- **Next Payment Due Date Indication**
+  - System prominently displays next payment due date for each tenant on dashboard
+  - Visual indicators showing:
+    - Next payment due date
+    - Days remaining until next payment
+    - Payment duration covered by last payment
+    - Payment cycle status (Active/Upcoming/Overdue)
+  - Color-coded indicators:\n    - Green: Payment cycle active, next payment more than 7 days away
+    - Yellow: Next payment due within 7 days
+    - Orange: Next payment due within 3 days
+    - Red: Payment overdue
+  - Tenant card/row on dashboard shows:
+    - Tenant name
+    - Room number\n    - Last payment date
+    - Last payment amount
+    - Payment duration
+    - Next payment due date
+    - Days remaining/overdue
+  - Quick view tooltip on hover showing complete payment cycle information
+
+- **Payment Duration Management**
+  - System tracks payment duration for each payment record
+  - Automatic calculation of payment coverage period
+  - Visual timeline showing payment coverage span
+  - Support for advance payments covering multiple months
+  - Prorated rent calculation for partial month payments
+  - Adjustment options for payment duration changes
+
+#### 2.8.4 Comprehensive Payment History and View All Payments Dashboard
+- **View All Payments Dashboard**
+  - Dedicated comprehensive payments view accessible from main dashboard
+  - Displays all payment records across all tenants in a unified interface
+  - Payment list showing:
+    - Tenant name
+    - Property name
+    - Room number
+    - Payment amount
+    - Payment date
+    - Payment duration
+    - Payment method
+    - Transaction reference\n    - Receipt number
+    - Next payment due date
+    - Payment status
+  - Advanced filtering options:
+    - Filter by tenant\n    - Filter by property
+    - Filter by payment date range
+    - Filter by payment method
+    - Filter by payment status (Paid/Pending/Overdue)
+    - Filter by payment duration (Monthly/Quarterly/Half-Yearly/Yearly)
+  - Sorting options:
+    - Sort by payment date (newest/oldest)
+    - Sort by tenant name
+    - Sort by payment amount (high/low)
+    - Sort by next due date
+  - Search functionality to quickly find specific payments
+  - Pagination for large payment records
+  - Export all payments data to Excel/PDF
+  - Print payment records
+
+- **Detailed Payment Information View**
+  - Click on any payment record to view complete details:\n    - Full tenant information
+    - Complete payment details
+    - Payment duration breakdown
+    - Payment coverage period (from date to date)
+    - Next payment due date
+    - Payment receipt
+    - Transaction history
+    - Payment notes
+  - Option to edit payment details
+  - Option to generate and download payment receipt
+  - Option to send payment receipt to tenant via WhatsApp/Email
+\n- **Payment History for Individual Tenant**
+  - Complete payment history for each tenant accessible from tenant profile
+  - Chronological list of all payments made by tenant
+  - Payment timeline visualization showing payment dates and amounts
+  - Total amount paid by tenant (lifetime)
+  - Average payment amount\n  - Payment frequency analysis
   - Outstanding balance tracking
   - Advance payment tracking
   - Security deposit tracking
+  - Payment receipt generation and download for each payment
+  - Payment summary reports for individual tenant
 
-#### 2.8.4 Visual Payment Analytics and Reporting
+#### 2.8.5 Automated Revenue Calculation and Updates
+- **Real-Time Revenue Tracking**
+  - System automatically updates total revenue upon each payment recording
+  - Revenue calculation based on:
+    - All recorded payments across all tenants
+    - Payment duration and coverage period
+    - Property-wise revenue breakdown
+    - Room-wise revenue breakdown
+  - Real-time revenue dashboard showing:
+    - Total revenue collected (all-time)
+    - Current month revenue
+    - Last month revenue
+    - Year-to-date revenue
+    - Property-wise revenue comparison
+    - Room-type-wise revenue analysis
+\n- **Revenue Analytics and Projections**
+  - Expected revenue calculation based on:
+    - Total occupied rooms/seats
+    - Rent amount per room/seat
+    - Payment cycles and due dates
+  - Revenue vs Expected Revenue comparison
+  - Revenue collection efficiency percentage
+  - Projected revenue for upcoming months based on current occupancy
+  - Revenue growth trends over time
+  - Revenue forecasting based on historical data
+
+- **Revenue Dashboard Widgets**
+  - Total revenue collected (with growth percentage)
+  - Current month revenue (with comparison to last month)
+  - Outstanding revenue (pending payments)
+  - Revenue by property (pie chart or bar graph)
+  - Revenue by payment method\n  - Revenue timeline graph (monthly/quarterly/yearly view)
+  - Top revenue generating properties
+  - Revenue per occupied seat/room average
+\n- **Automatic Revenue Updates**
+  - Revenue metrics update instantly upon payment recording
+  - Revenue graphs and charts refresh in real-time
+  - Revenue notifications for milestone achievements
+  - Revenue alerts for significant changes
+  - Revenue summary emails to owner (daily/weekly/monthly)
+\n#### 2.8.6 Payment Status Management Dashboard
+- **Payment Timeline Tracking Interface**
+  - Comprehensive payment management dashboard showing:
+    - List of all tenants with payment status
+    - Current payment cycle status (Active/Upcoming/Overdue)
+    - Payment due date for each tenant
+    - Days remaining until due date or days overdue
+    - Payment duration covered by last payment
+    - Next payment due date prominently displayed
+    - Payment history for each tenant
+    - Total outstanding amount across all tenants
+    - Total collected amount for current month
+    - Expected revenue vs actual revenue
+\n- **Payment Status Indicators**
+  - Color-coded payment status:
+    - Green: Payment received, next payment more than 7 days away
+    - Yellow: Payment due soon (within 7 days)
+    - Orange: Payment due within 3 days
+    - Red: Payment overdue
+  - Visual indicators for payment status on tenant list
+  - Filter options: All tenants, Paid, Pending, Overdue, Upcoming
+  - Sort options: By due date, by tenant name, by payment status, by amount, by payment duration
+\n#### 2.8.7 Visual Payment Analytics and Reporting
 - **Interactive Payment Dashboard with Visual Graphs**
   - **Payment Collection Timeline Graph**
     - Line graph showing payment collection over time
     - X-axis: Dates (daily, weekly, or monthly view)
     - Y-axis: Payment amount collected
     - Data points showing exact payment amount and date
-    - Hover to see detailed information (tenant name, amount, date)
+    - Hover to see detailed information (tenant name, amount, date, duration)
     - Filter by date range (last 7 days, last 30 days, last 3 months, last 6 months, last year, custom range)
 \n  - **Payment Status Distribution Chart**
     - Pie chart or donut chart showing:\n      - Percentage of tenants with payment received
@@ -385,9 +509,7 @@ A professional management software designed for property owners of PG, hostels, 
 
   - **Monthly Revenue Comparison Bar Graph**
     - Bar graph comparing monthly revenue collection
-    - X-axis: Months
-    - Y-axis: Revenue amount
-    - Bars showing actual revenue collected vs expected revenue
+    - X-axis: Months\n    - Y-axis: Revenue amount\n    - Bars showing actual revenue collected vs expected revenue
     - Color differentiation for collected vs pending amounts
     - Hover to see detailed breakdown
 
@@ -398,30 +520,40 @@ A professional management software designed for property owners of PG, hostels, 
     - Green: Payment received on time
     - Yellow: Payment received late
     - Red: Payment not received
-    - Click on cell to see payment details
+    - Click on cell to see payment details including duration and next due date
 
   - **Payment Method Distribution Chart**
     - Pie chart showing distribution of payment methods used
     - Categories: Cash, Bank Transfer, UPI, Cheque, Online
     - Percentage and amount for each payment method
-\n  - **Outstanding Amount Tracker**
+\n  - **Payment Duration Analysis Chart**
+    - Bar chart showing distribution of payment durations
+    - Categories: Monthly, Quarterly, Half-Yearly, Yearly, Custom
+    - Number of tenants and total revenue for each duration type
+    - Helps owner understand payment preferences
+
+  - **Outstanding Amount Tracker**
     - Visual gauge or progress bar showing:
       - Total outstanding amount
       - Total collected amount
       - Collection percentage
     - Real-time updates as payments are recorded\n\n- **Payment Analytics Metrics**
-  - Total revenue collected (current month, last month, year-to-date)
+  - Total revenue collected (current month, last month, year-to-date, all-time)
   - Average payment collection time (days from due date)\n  - On-time payment rate percentage
   - Late payment rate percentage
   - Average outstanding amount per tenant
   - Payment collection efficiency score
   - Tenant payment reliability score
+  - Average payment duration preference
+  - Revenue per payment duration type
 
 - **Payment Reports Generation**
   - Monthly payment summary report
   - Tenant-wise payment report
   - Overdue payment report
   - Payment method wise report
+  - Payment duration wise report
+  - Revenue analysis report
   - Custom date range reports
   - Export reports in PDF and Excel formats
   - Email reports to owner
@@ -432,16 +564,18 @@ A professional management software designed for property owners of PG, hostels, 
     - Total payments received this month
     - Total overdue payments
     - Number of tenants with pending payments
-    - Number of tenants with overdue payments
+    - Number of tenants with overdue payments\n    - Upcoming payment due dates (next 7 days)\n    - Next payment due date for each tenant
   - Real-time notification badges for:
     - New payments received
     - Upcoming due dates
     - Overdue payments
+    - Payment duration expiring soon
   - Alert system for critical payment issues
 \n### 2.9 Property Management Tasks\n- Payment tracking\n- Maintenance requests handling
 - Contract management
 - Booking history
-- Check-in/check-out management\n- Seat allocation management (for PG/Hostel)
+- Check-in/check-out management
+- Seat allocation management (for PG/Hostel)
 - Room transfer requests
 \n### 2.10 Analytics and Reports
 - Occupancy rate reports (property-wise, floor-wise, and room-wise)
@@ -456,6 +590,8 @@ A professional management software designed for property owners of PG, hostels, 
 - Payment collection analytics
 - Payment timeline reports
 - Outstanding payment reports
+- Payment duration analysis reports
+- Revenue growth reports
 \n## 3. User Roles\n- Property Owner (primary role for current version)
 \n## 4. Design Requirements
 
@@ -490,12 +626,14 @@ A professional management software designed for property owners of PG, hostels, 
 - One-click WhatsApp group management
 - Intuitive payment management dashboard with visual indicators
 - Interactive payment analytics graphs and charts
-- Easy payment recording interface with tenant selection
+- Easy payment recording interface with tenant selection and duration selection
 - Real-time payment status updates
 - Visual payment timeline tracking
+- Prominent next payment due date display for each tenant
+- Comprehensive view all payments dashboard with advanced filtering
+- Real-time revenue updates and analytics
 \n## 5. Technical Requirements
-- Responsive web application
-- Real-time data synchronization
+- Responsive web application\n- Real-time data synchronization
 - Secure authentication system
 - Media file upload support (images and videos)
 - Multiple image upload per room
@@ -522,14 +660,15 @@ A professional management software designed for property owners of PG, hostels, 
 - Real-time room counter per floor
 - WhatsApp Business API integration for automated group management
 - Automated message sending capabilities
-- Contact synchronization with WhatsApp\n- Group creation and member management APIs
+- Contact synchronization with WhatsApp
+- Group creation and member management APIs
 - Message template management system
 - Real-time WhatsApp group sync with tenant occupancy status
-- Automated rent calculation engine
-- Payment cycle tracking system
+- Automated rent calculation engine with payment duration support
+- Payment cycle tracking system with next payment due date calculation
 - Scheduled task system for automated payment reminders
 - Payment status management database
-- Payment history and transaction logging
+- Payment history and transaction logging with duration tracking
 - Chart and graph rendering libraries (e.g., Chart.js, D3.js, Recharts)
 - Data visualization components for payment analytics
 - PDF and Excel report generation capabilities
@@ -537,7 +676,12 @@ A professional management software designed for property owners of PG, hostels, 
 - Real-time payment notification system
 - Payment receipt generation and storage
 - Tenant selection interface for payment recording
-- Monthly payment update functionality
+- Payment duration selection and management functionality
+- Next payment due date calculation and display logic
+- Comprehensive payment records database with advanced querying
+- Real-time revenue calculation and update system
+- Revenue analytics and forecasting algorithms
+- Automated revenue dashboard updates
 \n## 6. Geographic Scope
 - Application operates exclusively in India
 - State dropdown includes all Indian states and union territories
@@ -559,8 +703,7 @@ A professional management software designed for property owners of PG, hostels, 
 16. Once a floor reaches its room limit, that floor is automatically removed from the floor selection dropdown
 17. System validates and prevents adding more rooms than specified for each floor
 18. For PG/Hostel: Owner specifies sharing type, rent per seat, and food inclusion for each room
-19. Owner uploads images for each room
-20. Rooms become available for booking once added\n21. Owner adds tenant information and assigns specific room and seat\n22. System updates occupancy status in real-time upon tenant assignment
+19. Owner uploads images for each room\n20. Rooms become available for booking once added\n21. Owner adds tenant information and assigns specific room and seat\n22. System updates occupancy status in real-time upon tenant assignment
 23. System automatically initiates rent payment cycle from tenant's check-in date
 24. System calculates monthly rent due date based on check-in date
 25. System automatically adds the tenant to the property's WhatsApp group using tenant's contact number
@@ -568,27 +711,47 @@ A professional management software designed for property owners of PG, hostels, 
 27. System automatically sends payment reminder WhatsApp messages to tenant according to configured schedule (7 days before, 3 days before, 1 day before, on due date, and daily after due date if payment not received)
 28. Owner receives payment indicators and notifications on dashboard showing upcoming due dates and overdue payments
 29. Owner can view payment timeline for all tenants with color-coded status indicators (Paid/Pending/Overdue)
-30. Owner selects tenant from tenant list to add payment\n31. Owner enters payment details including rent amount, payment date, payment method, transaction reference, and notes
-32. Owner can update payment details on monthly basis for each tenant
-33. System automatically updates payment status and sends WhatsApp payment confirmation message to tenant
-34. System generates visual payment analytics graphs showing:\n    - Payment collection timeline with date-wise payment amounts
+30. Owner selects tenant from tenant list to add payment\n31. Owner enters payment details including:\n    - Rent amount (auto-populated, editable)
+    - Payment duration (Monthly/Quarterly/Half-Yearly/Yearly/Custom)
+    - Payment date\n    - Payment method
+    - Transaction reference\n    - Notes
+32. System automatically calculates and displays next payment due date based on selected duration before confirming payment
+33. Owner confirms payment recording\n34. System automatically updates payment status and records next payment due date
+35. System sends WhatsApp payment confirmation message to tenant including payment details, duration covered, and next payment due date
+36. System automatically updates total revenue in real-time upon payment recording
+37. Revenue dashboard widgets refresh instantly showing:
+    - Updated total revenue
+    - Current month revenue
+    - Revenue by property
+    - Revenue analytics and trends
+38. Dashboard prominently displays next payment due date for each tenant with visual indicators:\n    - Green: Next payment more than 7 days away
+    - Yellow: Next payment due within 7 days
+    - Orange: Next payment due within 3 days
+    - Red: Payment overdue
+39. Owner can access View All Payments dashboard to see comprehensive list of all payment records across all tenants
+40. Owner can filter, sort, and search payments by various criteria (tenant, property, date range, payment method, status, duration)
+41. Owner can click on any payment record to view complete details including payment duration, coverage period, and next due date
+42. Owner can view detailed payment history for individual tenant from tenant profile
+43. System generates visual payment analytics graphs showing:
+    - Payment collection timeline with date-wise payment amounts
     - Payment status distribution chart
     - Monthly revenue comparison bar graph
     - Tenant-wise payment timeline heatmap
     - Payment method distribution chart
-    - Outstanding amount tracker
-35. Owner can view detailed payment history and generate payment reports
-36. Enhanced cinema-style visual occupancy dashboard displays:
+    - Payment duration analysis chart
+    - Outstanding amount tracker\n44. Enhanced cinema-style visual occupancy dashboard displays:
     - Property layout as theater screen
     - Floors as theater rows
     - Rooms as seat groups
     - Individual beds/seats as cinema seat icons
     - Real-time color-coded occupancy status for each seat/bed
-37. Owner manages bookings, tenants, and property operations through dashboard
-38. Real-time occupancy dashboard updates automatically with smooth animations for every change
-39. Owner can interact with visual dashboard to view detailed information by hovering or clicking on seats/rooms
-40. Owner can send broadcast messages to all tenants through WhatsApp group management interface
-41. When tenant checks out, system can automatically remove tenant from WhatsApp group (if enabled)
-42. If owner edits or deletes rooms, system automatically recalculates floor quota and updates available floors in dropdown
-43. System continues to track payment cycles and send automated reminders for all active tenants
-44. Owner can view comprehensive payment analytics and reports to monitor revenue collection efficiency
+45. Owner manages bookings, tenants, and property operations through dashboard\n46. Real-time occupancy dashboard updates automatically with smooth animations for every change
+47. Owner can interact with visual dashboard to view detailed information by hovering or clicking on seats/rooms
+48. Owner can send broadcast messages to all tenants through WhatsApp group management interface
+49. When tenant checks out, system can automatically remove tenant from WhatsApp group (if enabled)
+50. If owner edits or deletes rooms, system automatically recalculates floor quota and updates available floors in dropdown
+51. System continues to track payment cycles based on payment duration and sends automated reminders for all active tenants
+52. System automatically sends payment reminders as next payment due date approaches based on configured schedule
+53. Owner can view comprehensive payment analytics and reports to monitor revenue collection efficiency
+54. Owner can generate and export payment reports in PDF/Excel formats
+55. System maintains real-time sync between payment records, revenue calculations, and dashboard displays

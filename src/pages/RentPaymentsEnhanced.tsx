@@ -44,7 +44,7 @@ import {
   Plus,
   RefreshCw,
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, addMonths, isAfter, isBefore, startOfDay } from 'date-fns';
 
 interface PaymentWithDetails extends RentPayment {
   tenant?: { full_name: string; phone: string };
@@ -365,6 +365,51 @@ export default function RentPaymentsEnhanced() {
         </Select>
       </div>
 
+      {/* Payment Overview Section with Revenue */}
+      <div className="grid gap-4 xl:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Revenue (All Time)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-green-500">
+              ₹{(paymentAnalytics?.paidAmount || 0).toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              From {paymentAnalytics?.paidPayments || 0} completed payments
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Pending Revenue</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-yellow-500">
+              ₹{(paymentAnalytics?.pendingAmount || 0).toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              From {paymentAnalytics?.pendingPayments || 0} pending payments
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Overdue Amount</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-red-500">
+              ₹{(paymentAnalytics?.overdueAmount || 0).toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              From {paymentAnalytics?.overduePayments || 0} overdue payments
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Stats Cards */}
       <div className="grid gap-4 xl:grid-cols-4">
         {stats.map((stat, index) => {
@@ -449,6 +494,15 @@ export default function RentPaymentsEnhanced() {
                         </span>
                       )}
                     </div>
+                    {/* Next Payment Indicator */}
+                    {payment.status === 'paid' && payment.tenant && (
+                      <div className="flex items-center gap-1 text-xs text-primary mt-2 bg-primary/10 px-3 py-1.5 rounded-md w-fit">
+                        <Clock className="h-3 w-3" />
+                        <span className="font-medium">
+                          Next payment due: {format(addMonths(new Date(payment.due_date), 1), 'MMM dd, yyyy')}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-4 mt-4 xl:mt-0">
                     <div className="text-right">

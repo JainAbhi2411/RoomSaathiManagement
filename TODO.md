@@ -46,17 +46,25 @@
   - [x] Manual payment creation dialog
   - [x] Automatic monthly payment generation for all tenants
 
-- [ ] Step 6: Payment Analytics Charts (Future)
+- [x] Step 6: Next Payment Indicators & Revenue Tracking
+  - [x] Show "Next payment due" indicator for paid payments
+  - [x] Calculate next payment date based on current payment
+  - [x] Display next payment date in payment list
+  - [x] Add revenue overview cards (Total, Pending, Overdue)
+  - [x] Update Dashboard payment links to rent-payments
+  - [x] Show all payment details with revenue breakdown
+
+- [ ] Step 7: Payment Analytics Charts (Future)
   - [ ] Payment timeline chart (line/bar chart)
   - [ ] Payment status distribution (pie chart)
   - [ ] Monthly revenue chart
 
-- [ ] Step 7: WhatsApp Integration (Future)
+- [ ] Step 8: WhatsApp Integration (Future)
   - [ ] Auto-send payment reminders
   - [ ] Payment due notifications
   - [ ] Payment received confirmation
 
-- [ ] Step 8: Automatic Payment Generation (Future)
+- [ ] Step 9: Automatic Payment Generation (Future)
   - [ ] Create Edge Function for monthly payment generation
   - [ ] Schedule monthly payment creation
   - [ ] Update payment status (pending → overdue)
@@ -69,4 +77,7 @@
 - Owner can manually add payments for any tenant
 - Owner can generate monthly payments for all tenants with one click
 - Payment analytics show trends and collection rates
-- Core functionality COMPLETE: database, API, UI page with manual and automatic payment creation
+- **Next Payment Indicator**: Shows next due date for paid payments (current due date + 1 month)
+- **Revenue Tracking**: Total revenue (all paid), Pending revenue, Overdue amount displayed
+- **Dashboard Integration**: Payment links updated to point to rent-payments page
+- Core functionality COMPLETE: database, API, UI page with manual/automatic payment creation, next payment indicators, revenue tracking
