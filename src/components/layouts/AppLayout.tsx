@@ -25,6 +25,7 @@ import {
   User,
   Grid3x3,
   DoorOpen,
+  Shield,
 } from 'lucide-react';
 
 interface AppLayoutProps {
@@ -52,6 +53,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
     await signOut();
     navigate('/login');
   };
+
+  const isAdmin = profile?.is_admin === true;
 
   const NavLinks = () => (
     <>
@@ -85,6 +88,39 @@ export default function AppLayout({ children }: AppLayoutProps) {
           </Link>
         );
       })}
+      
+      {/* Admin Dashboard Link - Only visible to admins */}
+      {isAdmin && (
+        <>
+          <div className="my-4 border-t border-sidebar-border/30" />
+          <Link
+            to="/admin"
+            className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+              location.pathname === '/admin'
+                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/25 scale-[1.02]'
+                : 'text-sidebar-foreground hover:bg-gradient-to-r hover:from-amber-500/10 hover:to-orange-500/10 hover:translate-x-1 border border-amber-500/20'
+            }`}
+          >
+            {location.pathname === '/admin' && (
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full" />
+            )}
+            <div className={`p-2 rounded-lg transition-all duration-300 ${
+              location.pathname === '/admin'
+                ? 'bg-white/20' 
+                : 'bg-amber-500/10 group-hover:bg-amber-500/20 group-hover:scale-110'
+            }`}>
+              <Shield className="h-5 w-5" />
+            </div>
+            <div className="flex-1">
+              <span className="font-semibold">Admin Dashboard</span>
+              <p className="text-xs opacity-80">Verify Properties</p>
+            </div>
+            {location.pathname !== '/admin' && (
+              <div className="absolute inset-0 rounded-xl bg-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            )}
+          </Link>
+        </>
+      )}
     </>
   );
 
@@ -136,7 +172,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 </p>
                 <p className="text-xs text-sidebar-foreground/70 capitalize flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                  {(profile?.role || 'owner') as string}
+                  {isAdmin ? 'Administrator' : (profile?.role || 'owner') as string}
                 </p>
               </div>
               <div className="opacity-0 group-hover:opacity-100 transition-opacity">
@@ -233,9 +269,20 @@ export default function AppLayout({ children }: AppLayoutProps) {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>
                   <p className="font-medium">{(profile?.username || 'User') as string}</p>
-                  <p className="text-xs text-muted-foreground capitalize">{(profile?.role || 'owner') as string}</p>
+                  <p className="text-xs text-muted-foreground capitalize">
+                    {isAdmin ? 'Administrator' : (profile?.role || 'owner') as string}
+                  </p>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                {isAdmin && (
+                  <>
+                    <DropdownMenuItem onClick={() => navigate('/admin')}>
+                      <Shield className="mr-2 h-4 w-4" />
+                      Admin Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 h-4 w-4" />
                   Logout
