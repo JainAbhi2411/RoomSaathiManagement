@@ -4,20 +4,20 @@
 Property Management Pro
 
 ### 1.2 Application Description
-A professional management software designed for property owners of PG, hostels, flats, mess, and vacant rental spaces in India. The platform enables owners to create accounts, list properties with comprehensive information, and manage all property-related tasks including real-time room booking, vacancy tracking, and analytics. The application features a professional theme with a modern color scheme and an advanced step-by-step property listing process with property-type-specific information collection, detailed room management capabilities, and a creative visual occupancy dashboard similar to movie booking systems.
+A professional management software designed for property owners of PG, hostels, flats, mess, and vacant rental spaces in India. The platform enables owners to create accounts, list properties with comprehensive information, and manage all property-related tasks including real-time room booking, vacancy tracking, and analytics. The application features a professional theme with a modern color scheme and an advanced step-by-step property listing process with property-type-specific information collection, detailed room management capabilities, and a highly visual cinema-style occupancy dashboard that displays floor layouts, room arrangements, and individual seat/bed occupancy status.
 
 ## 2. Core Features
-\n### 2.1 Owner Account Management
-- Owner registration and login
+
+### 2.1 Owner Account Management\n- Owner registration and login
 - Profile management
 - Account settings
 
-### 2.2 Advanced Property Listing Management
-- Multi-step property listing process:
-  - **Step 1: Basic Information**\n    - Property type selection (PG, hostel, flat, mess, vacant room space)
-    - Property name
-    - Property description
-  - **Step 2: Property Type Specific Details**\n    - **For Flat/Apartment:**
+### 2.2 Advanced Property Listing Management\n- Multi-step property listing process:
+  - **Step 1: Basic Information**
+    - Property type selection (PG, hostel, flat, mess, vacant room space)
+    - Property name\n    - Property description
+  - **Step 2: Property Type Specific Details**
+    - **For Flat/Apartment:**
       - Configuration type (1 BHK, 2 BHK, 3 BHK, 4 BHK, 5+ BHK)
       - Number of bathrooms
       - Number of balconies
@@ -131,20 +131,21 @@ A professional management software designed for property owners of PG, hostels, 
 ### 2.3 Advanced Room Management System
 - **Room Addition Interface** (accessible after property listing is completed)
 - **For PG/Hostel Properties:**
-  - Add individual rooms with following details:
-    - Floor number
+  - Add individual rooms with following details:\n    - Floor number
     - Room number/name
     - Sharing type (Single sharing, Double sharing, Triple sharing, Four sharing, Dormitory)
     - Number of beds in room
-    - Rent per seat/bed
-    - Room size (in sq ft)
-    - Room-specific amenities (AC, Attached bathroom, Balcony, Window, Fan, Light, etc.)\n    - Current occupancy status\n    - Available seats
+    - Rent per seat/bed\n    - Room size (in sq ft)
+    - Room-specific amenities (AC, Attached bathroom, Balcony, Window, Fan, Light, etc.)
+    - Current occupancy status
+    - Available seats
     - Room images upload (multiple images per room)
     - Room description
-- **For Flat/Apartment Properties:**\n  - Add room details:
-    - Room type (Bedroom, Living room, Kitchen, Bathroom, Balcony)
-    - Room size (in sq ft)
-    - Room-specific amenities\n    - Room images upload (multiple images per room)
+- **For Flat/Apartment Properties:**
+  - Add room details:
+    - Room type (Bedroom, Living room, Kitchen, Bathroom, Balcony)\n    - Room size (in sq ft)
+    - Room-specific amenities
+    - Room images upload (multiple images per room)
 - **For Vacant Room Space:**
   - Room number/identifier
   - Room size
@@ -155,15 +156,15 @@ A professional management software designed for property owners of PG, hostels, 
 - Room status management (Available/Occupied/Under Maintenance)
 
 ### 2.4 Tenant Management System
-- Add tenant information:
-  - Tenant name
+- Add tenant information:\n  - Tenant name
   - Contact details
-  - ID proof\n  - Check-in date\n  - Room assignment (owner can specify which room the tenant has booked)
+  - ID proof
+  - Check-in date
+  - Room assignment (owner can specify which room the tenant has booked)
   - Seat assignment (for PG/Hostel shared rooms)
 - Real-time occupancy update upon tenant room assignment
 - Tenant profile management
-- Tenant history tracking
-- Check-out management with automatic occupancy status update
+- Tenant history tracking\n- Check-out management with automatic occupancy status update
 
 ### 2.5 Real-Time Room Booking System
 - Live booking interface similar to movie booking systems
@@ -171,82 +172,140 @@ A professional management software designed for property owners of PG, hostels, 
 - Display of room sharing type and rent per seat
 - Room-wise availability display
 - Instant booking confirmation
-- Booking status updates\n- Seat-level booking for shared accommodations
+- Booking status updates
+- Seat-level booking for shared accommodations
 
-### 2.6 Creative Visual Real-Time Occupancy Dashboard
-- Movie booking app style visual interface\n- Floor-wise layout display:\n  - Visual representation of each floor
-  - Room arrangement on each floor
-  - Seat layout within each room (for PG/Hostel)
-- Color-coded occupancy indicators:
-  - Green: Available seats/rooms
-  - Red: Occupied seats/rooms
+### 2.6 Enhanced Cinema-Style Visual Real-Time Occupancy Dashboard
+- **Movie Theater Inspired Visual Interface**
+  - Cinema hall seating layout style visualization
+  - Property structure displayed as theater screen (property name/info at top)
+  - Floor-wise sections displayed as theater rows
+  - Rooms displayed as seat groups within each floor row
+  - Individual beds/seats within rooms shown as cinema seats
+\n- **Property-Type Adaptive Visualization:**
+  - **For PG/Hostel:**
+    - Each floor displayed as a horizontal row (like theater rows A, B, C)
+    - Rooms arranged horizontally within each floor row
+    - Individual beds/seats within each room shown as seat icons
+    - Seat count per room visually represented (2-seater shows 2 seat icons, 4-seater shows 4 seat icons)
+    - Sharing type label displayed above each room group
+  - **For Flat/Apartment:**
+    - Entire flat shown as single unit or room-wise breakdown
+    - Rooms within flat displayed as grouped sections
+    - Visual representation adapts to BHK configuration
+  - **For Vacant Room Space:**
+    - Individual room units displayed as single seats
+    - Floor-wise arrangement maintained
+  - **For Mess:**
+    - Seating capacity shown as dining hall layout
+    - Table arrangements visualized
+\n- **Interactive Seat/Bed Visualization:**
+  - Each bed/seat represented as clickable icon (similar to movie seat selection)
+  - Seat icons styled like cinema seats with armrests and backrest visual
+  - Room boundaries clearly marked with subtle borders or spacing
+  - Room numbers/names displayed prominently
+  - Bed/seat numbers labeled within each room
+
+- **Color-Coded Occupancy Indicators:**
+  - Green: Available seats/beds
+  - Red: Occupied seats/beds
   - Yellow: Under maintenance
   - Blue: Reserved/Booked
-- Interactive room selection
-- Hover effects showing room details
-- Seat-by-seat status for shared accommodations
-- Real-time updates when tenant assignments change
-- Quick overview statistics:
-  - Total rooms
-  - Total seats (for PG/Hostel)
-  - Occupied count
-  - Available count
-  - Occupancy percentage
-- Filter options:
-  - By floor
-  - By sharing type
-  - By availability status
-- Zoom and pan functionality for large properties\n
+  - Grey: Not applicable/Blocked
+
+- **Enhanced Interactive Features:**
+  - Hover over any seat/bed to see:\n    - Room number and name
+    - Bed/seat number
+    - Occupancy status
+    - Tenant name (if occupied)
+    - Rent amount
+    - Room amenities
+  - Click on seat/bed for detailed information popup
+  - Click on room group to see room-level details
+  - Floor row headers clickable to expand/collapse floor view
+\n- **Visual Layout Controls:**
+  - Toggle between compact and expanded view
+  - Zoom in/out functionality for large properties
+  - Pan and scroll for navigation
+  - Full-screen mode option
+  - Floor selector for quick navigation
+  - Room type filter (Single/Double/Triple/Four sharing/Dormitory)
+
+- **Real-Time Statistics Panel:**
+  - Total floors\n  - Total rooms
+  - Total beds/seats (for PG/Hostel)\n  - Currently occupied count
+  - Currently available count
+  - Overall occupancy percentage
+  - Floor-wise occupancy breakdown
+  - Room-type-wise occupancy breakdown
+  - Revenue metrics
+
+- **Legend and Guide:**
+  - Color legend explaining status indicators
+  - Visual guide showing seat/room representation
+  - Quick help tooltip\n\n- **Responsive Design:**
+  - Adapts to screen size while maintaining cinema-style layout
+  - Mobile-optimized touch interactions
+  - Tablet view with optimized spacing
+\n- **Real-Time Updates:**
+  - Instant visual update when tenant is assigned\n  - Smooth color transition animations
+  - Live sync across multiple devices
+  - Notification badges for recent changes
+
 ### 2.7 Property Management Tasks
-- Payment tracking
-- Maintenance requests handling
+- Payment tracking\n- Maintenance requests handling
 - Contract management
 - Booking history
 - Check-in/check-out management
 - Seat allocation management (for PG/Hostel)
 - Room transfer requests
-
-### 2.8 Analytics and Reports
+\n### 2.8 Analytics and Reports
 - Occupancy rate reports (property-wise, floor-wise, and room-wise)
 - Revenue analysis (total and per room/seat)
-- Booking trends\n- Tenant demographics
+- Booking trends
+- Tenant demographics
 - Financial summaries
 - Performance metrics
 - Sharing-type-wise revenue comparison
 - Custom date range reports
 - Room-wise profitability analysis
 - Floor-wise occupancy comparison
-\n## 3. User Roles
-- Property Owner (primary role for current version)
 
-## 4. Design Requirements
-\n### 4.1 Theme and Color Scheme
+## 3. User Roles\n- Property Owner (primary role for current version)
+\n## 4. Design Requirements
+
+### 4.1 Theme and Color Scheme
 - Professional and modern design theme
-- Primary color palette with business-appropriate colors\n- Clean and intuitive user interface
-- Consistent visual hierarchy\n- Professional typography
-- Movie booking app inspired visual design for occupancy dashboard
+- Primary color palette with business-appropriate colors
+- Clean and intuitive user interface
+- Consistent visual hierarchy
+- Professional typography
+- Cinema/movie theater inspired visual design for occupancy dashboard
+- Seat icon design similar to movie booking apps
 
-### 4.2 User Experience
-- Step-by-step guided property listing process
+### 4.2 User Experience\n- Step-by-step guided property listing process
 - Progress indicator showing current step
 - Save draft functionality at each step
 - Clear navigation between steps
 - Validation and error messages
 - Responsive design for all devices
 - Intuitive room management interface
-- Visual room layout display
+- Cinema-style visual room and seat layout display
 - Easy image upload with preview
-- Drag-and-drop functionality for image uploads\n- Interactive floor and room visualization\n- Real-time occupancy status updates
-- Smooth animations and transitions
+- Drag-and-drop functionality for image uploads
+- Interactive floor, room, and seat-level visualization
+- Real-time occupancy status updates with smooth animations
 - Seamless resume experience from saved progress
-
-## 5. Technical Requirements
+- Movie theater inspired seat selection experience
+- Hover and click interactions for detailed information
+- Zoom, pan, and navigation controls for large properties
+\n## 5. Technical Requirements
 - Responsive web application
 - Real-time data synchronization
 - Secure authentication system
 - Media file upload support (images and videos)
 - Multiple image upload per room
-- Dashboard with data visualization
+- Dashboard with advanced data visualization
 - Location-based dropdown system (State → City hierarchy)
 - Form validation and data integrity checks
 - Draft saving functionality with auto-save capability
@@ -256,30 +315,37 @@ A professional management software designed for property owners of PG, hostels, 
 - Gallery view for room images
 - Auto-calculation of total rooms based on floor-wise input
 - Real-time occupancy tracking and updates
-- Interactive visual dashboard with movie booking style interface
+- Interactive cinema-style visual dashboard with seat-level representation
+- SVG or Canvas-based rendering for seat/room visualization
 - WebSocket or similar technology for live updates
 - Local storage or database persistence for draft data
 - Session management for resume functionality
+- Smooth animation libraries for status transitions
+- Touch-optimized interactions for mobile devices
+- Scalable vector graphics for zoom functionality
 
 ## 6. Geographic Scope
 - Application operates exclusively in India
 - State dropdown includes all Indian states and union territories
 - City dropdown dynamically populated based on selected state
-
-## 7. Workflow
+\n## 7. Workflow
 1. Owner creates account and logs in
 2. Owner adds property through step-by-step listing process
 3. System adapts form fields based on selected property type
 4. System auto-saves progress at each step
 5. Owner can manually save draft at any point and resume later
 6. Owner inputs floor details (total floors and rooms per floor)
-7. System auto-calculates total rooms
-8. Owner completes property listing and submits
+7. System auto-calculates total rooms\n8. Owner completes property listing and submits
 9. Owner proceeds to add individual rooms with specific details
 10. For PG/Hostel: Owner specifies sharing type, rent per seat, and food inclusion for each room
 11. Owner uploads images for each room
-12. Rooms become available for booking once added\n13. Owner adds tenant information and assigns specific room and seat
+12. Rooms become available for booking once added
+13. Owner adds tenant information and assigns specific room and seat
 14. System updates occupancy status in real-time upon tenant assignment
-15. Creative visual occupancy dashboard displays floor-wise, room-wise, and seat-wise status
-16. Owner manages bookings, tenants, and property operations through dashboard
-17. Real-time occupancy dashboard updates automatically with every change
+15. Enhanced cinema-style visual occupancy dashboard displays:
+    - Property layout as theater screen
+    - Floors as theater rows
+    - Rooms as seat groups\n    - Individual beds/seats as cinema seat icons
+    - Real-time color-coded occupancy status for each seat/bed
+16. Owner manages bookings, tenants, and property operations through dashboard\n17. Real-time occupancy dashboard updates automatically with smooth animations for every change
+18. Owner can interact with visual dashboard to view detailed information by hovering or clicking on seats/rooms
