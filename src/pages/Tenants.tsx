@@ -80,10 +80,59 @@ export default function Tenants() {
       ]);
       setTenants(tenantsData);
       setProperties(propertiesData);
+      
+      // Auto-fix room occupancy based on actual tenant count
+      await recalculateAllRoomOccupancy(tenantsData);
     } catch (error) {
       console.error('Failed to load data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const recalculateAllRoomOccupancy = async (tenantsData: Tenant[]) => {
+    try {
+      // Count actual tenants per room
+      const tenantCountByRoom: Record<string, number> = {};
+      tenantsData.forEach(tenant => {
+        if (tenant.room_id) {
+          tenantCountByRoom[tenant.room_id] = (tenantCountByRoom[tenant.room_id] || 0) + 1;
+        }
+      });
+
+      // Get all unique room IDs
+      const roomIds = Object.keys(tenantCountByRoom);
+      
+      // Also get rooms with no tenants (need to set to 0)
+      const { data: allRooms } = await supabase
+        .from('rooms')
+        .select('id, occupied_seats');
+      
+      if (allRooms) {
+        const updates = allRooms
+          .filter(room => {
+            const actualCount = tenantCountByRoom[room.id] || 0;
+            return room.occupied_seats !== actualCount;
+          })
+          .map(room => {
+            const actualCount = tenantCountByRoom[room.id] || 0;
+            console.log(`Auto-fixing room ${room.id}: occupied_seats ${room.occupied_seats} -> ${actualCount}`);
+            return supabase
+              .from('rooms')
+              .update({
+                occupied_seats: actualCount,
+                is_occupied: actualCount > 0,
+              })
+              .eq('id', room.id);
+          });
+
+        if (updates.length > 0) {
+          await Promise.all(updates);
+          console.log(`Auto-fixed occupancy for ${updates.length} rooms`);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to recalculate room occupancy:', error);
     }
   };
 
@@ -307,24 +356,34 @@ export default function Tenants() {
       // Get tenant data before deletion to update room occupancy
       const tenantToDelete = tenants.find(t => t.id === id);
       
+      // Store room_id before deletion
+      const roomIdToUpdate = tenantToDelete?.room_id;
+
+      // Delete tenant first
       await deleteTenant(id);
 
       // Update room occupancy if tenant was assigned to a room
-      if (tenantToDelete?.room_id) {
+      if (roomIdToUpdate) {
         // Fetch room data directly from database
         const { data: room, error: roomError } = await supabase
           .from('rooms')
           .select('occupied_seats, capacity')
-          .eq('id', tenantToDelete.room_id)
+          .eq('id', roomIdToUpdate)
           .maybeSingle();
 
         if (!roomError && room) {
           const newOccupiedSeats = Math.max(0, (room.occupied_seats || 0) - 1);
-          await updateRoom(tenantToDelete.room_id, {
+          await updateRoom(roomIdToUpdate, {
             occupied_seats: newOccupiedSeats,
             is_occupied: newOccupiedSeats > 0,
           });
+          
+          console.log(`Updated room ${roomIdToUpdate}: occupied_seats = ${newOccupiedSeats}`);
+        } else {
+          console.error('Failed to fetch room for occupancy update:', roomError);
         }
+      } else {
+        console.log('Tenant had no room assigned, skipping occupancy update');
       }
 
       toast({

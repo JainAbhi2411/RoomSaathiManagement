@@ -60,8 +60,56 @@ export default function OccupancyDashboard() {
       ]);
       setRooms(roomsData);
       setTenants(tenantsData);
+      
+      // Auto-fix room occupancy on load
+      await recalculateRoomOccupancy(roomsData, tenantsData);
     } catch (error) {
       console.error('Failed to load data:', error);
+    }
+  };
+
+  const recalculateRoomOccupancy = async (roomsData: Room[], tenantsData: Tenant[]) => {
+    try {
+      // Count actual tenants per room
+      const tenantCountByRoom: Record<string, number> = {};
+      tenantsData.forEach(tenant => {
+        if (tenant.room_id) {
+          tenantCountByRoom[tenant.room_id] = (tenantCountByRoom[tenant.room_id] || 0) + 1;
+        }
+      });
+
+      // Update rooms where occupied_seats doesn't match actual tenant count
+      const updates = roomsData
+        .filter(room => {
+          const actualCount = tenantCountByRoom[room.id] || 0;
+          return room.occupied_seats !== actualCount;
+        })
+        .map(room => {
+          const actualCount = tenantCountByRoom[room.id] || 0;
+          console.log(`Fixing room ${room.room_number}: occupied_seats ${room.occupied_seats} -> ${actualCount}`);
+          return supabase
+            .from('rooms')
+            .update({
+              occupied_seats: actualCount,
+              is_occupied: actualCount > 0,
+            })
+            .eq('id', room.id);
+        });
+
+      if (updates.length > 0) {
+        await Promise.all(updates);
+        console.log(`Fixed occupancy for ${updates.length} rooms`);
+        
+        // Reload data to reflect changes
+        const [updatedRooms, updatedTenants] = await Promise.all([
+          getRoomsByProperty(selectedProperty!.id),
+          getTenants(selectedProperty!.id),
+        ]);
+        setRooms(updatedRooms);
+        setTenants(updatedTenants);
+      }
+    } catch (error) {
+      console.error('Failed to recalculate room occupancy:', error);
     }
   };
 
