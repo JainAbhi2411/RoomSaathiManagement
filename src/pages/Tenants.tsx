@@ -156,19 +156,32 @@ export default function Tenants() {
         if (oldRoomId !== newRoomId) {
           // Decrease occupancy of old room
           if (oldRoomId) {
-            const oldRoom = rooms.find(r => r.id === oldRoomId);
-            if (oldRoom) {
+            // Fetch old room data directly from database
+            const { data: oldRoom, error: oldRoomError } = await supabase
+              .from('rooms')
+              .select('occupied_seats, capacity')
+              .eq('id', oldRoomId)
+              .maybeSingle();
+
+            if (!oldRoomError && oldRoom) {
+              const newOccupiedSeats = Math.max(0, (oldRoom.occupied_seats || 0) - 1);
               await updateRoom(oldRoomId, {
-                occupied_seats: Math.max(0, (oldRoom.occupied_seats || 0) - 1),
-                is_occupied: (oldRoom.occupied_seats || 0) - 1 > 0,
+                occupied_seats: newOccupiedSeats,
+                is_occupied: newOccupiedSeats > 0,
               });
             }
           }
           
           // Increase occupancy of new room
           if (newRoomId) {
-            const newRoom = rooms.find(r => r.id === newRoomId);
-            if (newRoom) {
+            // Fetch new room data directly from database
+            const { data: newRoom, error: newRoomError } = await supabase
+              .from('rooms')
+              .select('occupied_seats, capacity')
+              .eq('id', newRoomId)
+              .maybeSingle();
+
+            if (!newRoomError && newRoom) {
               await updateRoom(newRoomId, {
                 occupied_seats: (newRoom.occupied_seats || 0) + 1,
                 is_occupied: true,
@@ -291,7 +304,29 @@ export default function Tenants() {
 
   const handleDeleteTenant = async (id: string) => {
     try {
+      // Get tenant data before deletion to update room occupancy
+      const tenantToDelete = tenants.find(t => t.id === id);
+      
       await deleteTenant(id);
+
+      // Update room occupancy if tenant was assigned to a room
+      if (tenantToDelete?.room_id) {
+        // Fetch room data directly from database
+        const { data: room, error: roomError } = await supabase
+          .from('rooms')
+          .select('occupied_seats, capacity')
+          .eq('id', tenantToDelete.room_id)
+          .maybeSingle();
+
+        if (!roomError && room) {
+          const newOccupiedSeats = Math.max(0, (room.occupied_seats || 0) - 1);
+          await updateRoom(tenantToDelete.room_id, {
+            occupied_seats: newOccupiedSeats,
+            is_occupied: newOccupiedSeats > 0,
+          });
+        }
+      }
+
       toast({
         title: 'Success',
         description: 'Tenant deleted successfully',
