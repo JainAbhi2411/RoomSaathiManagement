@@ -86,3 +86,52 @@ export const PROPERTY_AGE = [
   { value: '5-10', label: '5-10 years' },
   { value: '10+', label: 'More than 10 years' },
 ];
+
+// BHK types for flats/apartments
+export const BHK_TYPES = [
+  { value: '1RK', label: '1 RK (Room Kitchen)' },
+  { value: '1BHK', label: '1 BHK' },
+  { value: '2BHK', label: '2 BHK' },
+  { value: '3BHK', label: '3 BHK' },
+  { value: '4BHK', label: '4 BHK' },
+  { value: '5BHK', label: '5+ BHK' },
+];
+
+// Sharing types for PG/Hostel
+export const SHARING_TYPES = [
+  { value: 'single', label: 'Single Occupancy' },
+  { value: 'double', label: 'Double Sharing' },
+  { value: 'triple', label: 'Triple Sharing' },
+  { value: 'quad', label: 'Quad Sharing (4 people)' },
+  { value: 'dormitory', label: 'Dormitory (5+ people)' },
+];
+
+// Meal plans for mess
+export const MEAL_PLANS = [
+  { value: 'breakfast', label: 'Breakfast Only' },
+  { value: 'lunch', label: 'Lunch Only' },
+  { value: 'dinner', label: 'Dinner Only' },
+  { value: 'breakfast_dinner', label: 'Breakfast + Dinner' },
+  { value: 'lunch_dinner', label: 'Lunch + Dinner' },
+  { value: 'all_meals', label: 'All Meals (Breakfast + Lunch + Dinner)' },
+  { value: 'custom', label: 'Custom Meal Plan' },
+];
+
+// Room-specific amenities
+export const ROOM_AMENITIES = [
+  { id: 'ac', label: 'Air Conditioning' },
+  { id: 'tv', label: 'TV' },
+  { id: 'wifi', label: 'WiFi' },
+  { id: 'attached_bathroom', label: 'Attached Bathroom' },
+  { id: 'balcony', label: 'Balcony' },
+  { id: 'wardrobe', label: 'Wardrobe' },
+  { id: 'study_table', label: 'Study Table' },
+  { id: 'chair', label: 'Chair' },
+  { id: 'bed', label: 'Bed' },
+  { id: 'mattress', label: 'Mattress' },
+  { id: 'fan', label: 'Fan' },
+  { id: 'light', label: 'Light' },
+  { id: 'window', label: 'Window' },
+  { id: 'geyser', label: 'Geyser' },
+  { id: 'fridge', label: 'Mini Fridge' },
+];

@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard';
 import Properties from './pages/Properties';
 import PropertyForm from './pages/PropertyForm';
 import PropertyDetails from './pages/PropertyDetails';
+import RoomManagement from './pages/RoomManagement';
 import RoomBooking from './pages/RoomBooking';
 import VacancyDashboard from './pages/VacancyDashboard';
 import Tenants from './pages/Tenants';
@@ -52,6 +53,12 @@ const routes: RouteConfig[] = [
     name: 'Property Details',
     path: '/properties/:id',
     element: <PropertyDetails />,
+    visible: false,
+  },
+  {
+    name: 'Room Management',
+    path: '/properties/:id/rooms',
+    element: <RoomManagement />,
     visible: false,
   },
   {

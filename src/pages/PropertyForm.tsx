@@ -20,7 +20,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, ArrowRight, Check, Upload, X, Loader2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { INDIAN_STATES_CITIES, PROPERTY_AMENITIES, FURNISHING_STATUS, TENANT_TYPES, PROPERTY_AGE } from '@/data/indiaData';
+import { INDIAN_STATES_CITIES, PROPERTY_AMENITIES, FURNISHING_STATUS, TENANT_TYPES, PROPERTY_AGE, BHK_TYPES, MEAL_PLANS } from '@/data/indiaData';
 
 const propertyTypes: { value: PropertyType; label: string }[] = [
   { value: 'pg', label: 'PG (Paying Guest)' },
@@ -70,6 +70,12 @@ export default function PropertyForm() {
     maintenance_charges: 0,
     furnishing_status: '',
     property_age: '',
+    
+    // Property-specific fields
+    bhk_type: '',
+    property_size: 0,
+    meal_plan: '',
+    dormitory_capacity: 0,
 
     // Step 4: Amenities
     amenities: [] as string[],
@@ -118,6 +124,10 @@ export default function PropertyForm() {
           maintenance_charges: 0,
           furnishing_status: '',
           property_age: '',
+          bhk_type: property.bhk_type || '',
+          property_size: property.property_size || 0,
+          meal_plan: property.meal_plan || '',
+          dormitory_capacity: property.dormitory_capacity || 0,
           amenities: property.amenities || [],
           preferred_tenant: '',
           property_rules: '',
@@ -307,6 +317,10 @@ export default function PropertyForm() {
         total_rooms: formData.total_rooms,
         amenities: formData.amenities.length > 0 ? formData.amenities : null,
         images: images.length > 0 ? images : null,
+        bhk_type: formData.bhk_type || null,
+        property_size: formData.property_size || null,
+        meal_plan: formData.meal_plan || null,
+        dormitory_capacity: formData.dormitory_capacity || null,
       };
 
       if (id) {
@@ -316,11 +330,14 @@ export default function PropertyForm() {
           description: 'Property updated successfully',
         });
       } else {
-        await createProperty(propertyData);
+        const newProperty = await createProperty(propertyData);
         toast({
           title: 'Success',
-          description: 'Property created successfully',
+          description: 'Property created successfully! You can now add rooms.',
         });
+        // Redirect to property details or room management
+        navigate(`/properties/${newProperty.id}`);
+        return;
       }
 
       navigate('/properties');
@@ -509,99 +526,214 @@ export default function PropertyForm() {
 
           {/* Step 3: Property Details */}
           {currentStep === 3 && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="total_rooms">Total Rooms *</Label>
-                  <Input
-                    id="total_rooms"
-                    type="number"
-                    min="1"
-                    placeholder="e.g., 10"
-                    value={formData.total_rooms || ''}
-                    onChange={(e) =>
-                      setFormData({ ...formData, total_rooms: parseInt(e.target.value) || 0 })
-                    }
-                    required
-                  />
+            <div className="space-y-6">
+              {/* Property Type Specific Fields */}
+              {formData.property_type === 'flat' && (
+                <div className="p-4 bg-accent rounded-lg border-2 border-primary/20">
+                  <h3 className="font-semibold mb-4 text-primary">Flat/Apartment Details</h3>
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="bhk_type">BHK Type *</Label>
+                      <Select
+                        value={formData.bhk_type}
+                        onValueChange={(value) => setFormData({ ...formData, bhk_type: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select BHK type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {BHK_TYPES.map((type) => (
+                            <SelectItem key={type.value} value={type.value}>
+                              {type.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="property_size">Property Size (sq ft)</Label>
+                      <Input
+                        id="property_size"
+                        type="number"
+                        min="0"
+                        placeholder="e.g., 1200"
+                        value={formData.property_size || ''}
+                        onChange={(e) =>
+                          setFormData({ ...formData, property_size: parseInt(e.target.value) || 0 })
+                        }
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="monthly_rent">Monthly Rent (₹)</Label>
-                  <Input
-                    id="monthly_rent"
-                    type="number"
-                    min="0"
-                    placeholder="e.g., 8000"
-                    value={formData.monthly_rent || ''}
-                    onChange={(e) =>
-                      setFormData({ ...formData, monthly_rent: parseInt(e.target.value) || 0 })
-                    }
-                  />
+              )}
+
+              {formData.property_type === 'mess' && (
+                <div className="p-4 bg-accent rounded-lg border-2 border-primary/20">
+                  <h3 className="font-semibold mb-4 text-primary">Mess Details</h3>
+                  <div className="space-y-2">
+                    <Label htmlFor="meal_plan">Meal Plan *</Label>
+                    <Select
+                      value={formData.meal_plan}
+                      onValueChange={(value) => setFormData({ ...formData, meal_plan: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select meal plan" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {MEAL_PLANS.map((plan) => (
+                          <SelectItem key={plan.value} value={plan.value}>
+                            {plan.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="security_deposit">Security Deposit (₹)</Label>
-                  <Input
-                    id="security_deposit"
-                    type="number"
-                    min="0"
-                    placeholder="e.g., 10000"
-                    value={formData.security_deposit || ''}
-                    onChange={(e) =>
-                      setFormData({ ...formData, security_deposit: parseInt(e.target.value) || 0 })
-                    }
-                  />
+              )}
+
+              {formData.property_type === 'hostel' && (
+                <div className="p-4 bg-accent rounded-lg border-2 border-primary/20">
+                  <h3 className="font-semibold mb-4 text-primary">Hostel Details</h3>
+                  <div className="space-y-2">
+                    <Label htmlFor="dormitory_capacity">Total Dormitory Capacity</Label>
+                    <Input
+                      id="dormitory_capacity"
+                      type="number"
+                      min="0"
+                      placeholder="e.g., 50"
+                      value={formData.dormitory_capacity || ''}
+                      onChange={(e) =>
+                        setFormData({ ...formData, dormitory_capacity: parseInt(e.target.value) || 0 })
+                      }
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Total number of beds available across all dormitories
+                    </p>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="maintenance_charges">Maintenance Charges (₹)</Label>
-                  <Input
-                    id="maintenance_charges"
-                    type="number"
-                    min="0"
-                    placeholder="e.g., 1000"
-                    value={formData.maintenance_charges || ''}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        maintenance_charges: parseInt(e.target.value) || 0,
-                      })
-                    }
-                  />
+              )}
+
+              {(formData.property_type === 'pg' || formData.property_type === 'hostel') && (
+                <div className="p-4 bg-secondary/10 rounded-lg border-2 border-secondary/20">
+                  <div className="flex items-start gap-2 mb-2">
+                    <div className="p-2 bg-secondary rounded-lg">
+                      <Check className="h-4 w-4 text-secondary-foreground" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-secondary">Room Configuration</h3>
+                      <p className="text-sm text-muted-foreground">
+                        You'll be able to add individual rooms with sharing types and per-seat pricing after creating the property
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="furnishing_status">Furnishing Status</Label>
-                  <Select
-                    value={formData.furnishing_status}
-                    onValueChange={(value) => setFormData({ ...formData, furnishing_status: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select furnishing status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {FURNISHING_STATUS.map((status) => (
-                        <SelectItem key={status.value} value={status.value}>
-                          {status.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="property_age">Property Age</Label>
-                  <Select
-                    value={formData.property_age}
-                    onValueChange={(value) => setFormData({ ...formData, property_age: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select property age" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PROPERTY_AGE.map((age) => (
-                        <SelectItem key={age.value} value={age.value}>
-                          {age.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              )}
+
+              {/* Common Fields */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">General Information</h3>
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="total_rooms">Total Rooms *</Label>
+                    <Input
+                      id="total_rooms"
+                      type="number"
+                      min="1"
+                      placeholder="e.g., 10"
+                      value={formData.total_rooms || ''}
+                      onChange={(e) =>
+                        setFormData({ ...formData, total_rooms: parseInt(e.target.value) || 0 })
+                      }
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="monthly_rent">
+                      {formData.property_type === 'pg' || formData.property_type === 'hostel'
+                        ? 'Starting Rent (₹/month)'
+                        : 'Monthly Rent (₹)'}
+                    </Label>
+                    <Input
+                      id="monthly_rent"
+                      type="number"
+                      min="0"
+                      placeholder="e.g., 8000"
+                      value={formData.monthly_rent || ''}
+                      onChange={(e) =>
+                        setFormData({ ...formData, monthly_rent: parseInt(e.target.value) || 0 })
+                      }
+                    />
+                    {(formData.property_type === 'pg' || formData.property_type === 'hostel') && (
+                      <p className="text-xs text-muted-foreground">
+                        Base rent for single occupancy (you can set different rates per room later)
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="security_deposit">Security Deposit (₹)</Label>
+                    <Input
+                      id="security_deposit"
+                      type="number"
+                      min="0"
+                      placeholder="e.g., 10000"
+                      value={formData.security_deposit || ''}
+                      onChange={(e) =>
+                        setFormData({ ...formData, security_deposit: parseInt(e.target.value) || 0 })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="maintenance_charges">Maintenance Charges (₹/month)</Label>
+                    <Input
+                      id="maintenance_charges"
+                      type="number"
+                      min="0"
+                      placeholder="e.g., 1000"
+                      value={formData.maintenance_charges || ''}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          maintenance_charges: parseInt(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="furnishing_status">Furnishing Status</Label>
+                    <Select
+                      value={formData.furnishing_status}
+                      onValueChange={(value) => setFormData({ ...formData, furnishing_status: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select furnishing status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {FURNISHING_STATUS.map((status) => (
+                          <SelectItem key={status.value} value={status.value}>
+                            {status.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="property_age">Property Age</Label>
+                    <Select
+                      value={formData.property_age}
+                      onValueChange={(value) => setFormData({ ...formData, property_age: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select property age" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PROPERTY_AGE.map((age) => (
+                          <SelectItem key={age.value} value={age.value}>
+                            {age.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
             </div>

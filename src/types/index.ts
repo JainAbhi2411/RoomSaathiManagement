@@ -10,6 +10,9 @@ export type PropertyType = 'pg' | 'hostel' | 'flat' | 'mess' | 'vacant_room';
 export type BookingStatus = 'pending' | 'confirmed' | 'checked_in' | 'checked_out' | 'cancelled';
 export type PaymentStatus = 'pending' | 'paid' | 'overdue' | 'cancelled';
 export type MaintenanceStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled';
+export type SharingType = 'single' | 'double' | 'triple' | 'quad' | 'dormitory';
+export type BHKType = '1RK' | '1BHK' | '2BHK' | '3BHK' | '4BHK' | '5BHK';
+export type FurnishingStatus = 'fully_furnished' | 'semi_furnished' | 'unfurnished';
 
 export interface Profile {
   id: string;
@@ -36,6 +39,10 @@ export interface Property {
   amenities: string[] | null;
   images: string[] | null;
   videos: string[] | null;
+  bhk_type: string | null;
+  property_size: number | null;
+  meal_plan: string | null;
+  dormitory_capacity: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -48,6 +55,16 @@ export interface Room {
   price: number;
   is_occupied: boolean;
   capacity: number;
+  sharing_type: string | null;
+  price_per_seat: number | null;
+  occupied_seats: number;
+  room_amenities: string[] | null;
+  room_images: string[] | null;
+  room_description: string | null;
+  room_size: number | null;
+  has_attached_bathroom: boolean;
+  has_balcony: boolean;
+  furnishing_status: string | null;
   created_at: string;
   updated_at: string;
 }
