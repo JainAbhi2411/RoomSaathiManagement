@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { createProperty, updateProperty, getPropertyById } from '@/db/api';
 import { supabase } from '@/db/supabase';
 import type { Property, PropertyType } from '@/types';
+import { useFormPersistence } from '@/hooks/useFormPersistence';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,9 +19,20 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, ArrowRight, Check, Upload, X, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Upload, X, Loader2, Save, Clock } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { INDIAN_STATES_CITIES, PROPERTY_AMENITIES, FURNISHING_STATUS, TENANT_TYPES, PROPERTY_AGE, BHK_TYPES, MEAL_PLANS } from '@/data/indiaData';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
 
 const propertyTypes: { value: PropertyType; label: string }[] = [
   { value: 'pg', label: 'PG (Paying Guest)' },
@@ -49,6 +61,9 @@ export default function PropertyForm() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [showResumeDialog, setShowResumeDialog] = useState(false);
+  const [savedDraft, setSavedDraft] = useState<{ formData: any; timestamp: string } | null>(null);
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -94,6 +109,23 @@ export default function PropertyForm() {
 
   const [images, setImages] = useState<string[]>([]);
   const [availableCities, setAvailableCities] = useState<string[]>([]);
+
+  // Form persistence hook
+  const { saveToStorage, loadFromStorage, clearStorage } = useFormPersistence(formData, {
+    key: `property-form-draft-${user?.id || 'guest'}`,
+    debounceMs: 2000,
+  });
+
+  // Check for saved draft on mount
+  useEffect(() => {
+    if (!id && user) {
+      const draft = loadFromStorage();
+      if (draft) {
+        setSavedDraft(draft);
+        setShowResumeDialog(true);
+      }
+    }
+  }, [id, user, loadFromStorage]);
 
   useEffect(() => {
     if (id) {
@@ -152,6 +184,37 @@ export default function PropertyForm() {
         variant: 'destructive',
       });
     }
+  };
+
+  const handleResumeDraft = () => {
+    if (savedDraft) {
+      setFormData(savedDraft.formData);
+      setShowResumeDialog(false);
+      toast({
+        title: 'Draft Restored',
+        description: 'Your previous progress has been restored',
+      });
+    }
+  };
+
+  const handleDiscardDraft = () => {
+    clearStorage();
+    setSavedDraft(null);
+    setShowResumeDialog(false);
+    toast({
+      title: 'Draft Discarded',
+      description: 'Starting with a fresh form',
+    });
+  };
+
+  const handleSaveDraft = () => {
+    saveToStorage(formData);
+    const now = new Date().toLocaleString();
+    setLastSaved(now);
+    toast({
+      title: 'Draft Saved',
+      description: 'Your progress has been saved',
+    });
   };
 
   const compressImage = async (file: File): Promise<File> => {
@@ -338,12 +401,16 @@ export default function PropertyForm() {
           title: 'Success',
           description: 'Property updated successfully',
         });
+        // Clear draft after successful update
+        clearStorage();
       } else {
         const newProperty = await createProperty(propertyData);
         toast({
           title: 'Success',
           description: 'Property created successfully! You can now add rooms.',
         });
+        // Clear draft after successful creation
+        clearStorage();
         // Redirect to room management
         navigate(`/properties/${newProperty.id}/rooms`);
         return;
@@ -364,20 +431,72 @@ export default function PropertyForm() {
 
   const progressPercentage = (currentStep / STEPS.length) * 100;
 
+  const formatTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+    
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+  };
+
   return (
-    <div className="space-y-6 max-w-4xl mx-auto animate-fade-in">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/properties')}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div className="flex-1">
-          <h1 className="text-2xl xl:text-3xl font-bold text-foreground">
-            {id ? 'Edit Property' : 'Add New Property'}
-          </h1>
-          <p className="text-muted-foreground">
-            Step {currentStep} of {STEPS.length}: {STEPS[currentStep - 1].title}
-          </p>
+    <div className="space-y-6">
+      {/* Resume Draft Dialog */}
+      <AlertDialog open={showResumeDialog} onOpenChange={setShowResumeDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Resume Previous Draft?</AlertDialogTitle>
+            <AlertDialogDescription>
+              We found a saved draft from {savedDraft && formatTimestamp(savedDraft.timestamp)}. 
+              Would you like to continue where you left off?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleDiscardDraft}>
+              Start Fresh
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleResumeDraft}>
+              Resume Draft
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/properties')}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-2xl xl:text-3xl font-bold text-foreground">
+              {id ? 'Edit Property' : 'Add New Property'}
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Step {currentStep} of {STEPS.length}: {STEPS[currentStep - 1].title}
+            </p>
+          </div>
         </div>
+        {!id && (
+          <div className="flex items-center gap-2">
+            {lastSaved && (
+              <Badge variant="secondary" className="gap-1">
+                <Clock className="h-3 w-3" />
+                Saved {formatTimestamp(lastSaved)}
+              </Badge>
+            )}
+            <Button variant="outline" onClick={handleSaveDraft} disabled={loading}>
+              <Save className="mr-2 h-4 w-4" />
+              Save Draft
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Progress Bar */}

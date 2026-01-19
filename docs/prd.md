@@ -7,17 +7,17 @@ Property Management Pro
 A professional management software designed for property owners of PG, hostels, flats, mess, and vacant rental spaces in India. The platform enables owners to create accounts, list properties with comprehensive information, and manage all property-related tasks including real-time room booking, vacancy tracking, and analytics. The application features a professional theme with a modern color scheme and an advanced step-by-step property listing process with property-type-specific information collection, detailed room management capabilities, and a creative visual occupancy dashboard similar to movie booking systems.
 
 ## 2. Core Features
-
-### 2.1 Owner Account Management\n- Owner registration and login
+\n### 2.1 Owner Account Management
+- Owner registration and login
 - Profile management
 - Account settings
 
-### 2.2 Advanced Property Listing Management\n- Multi-step property listing process:
-  - **Step 1: Basic Information**
-    - Property type selection (PG, hostel, flat, mess, vacant room space)
-    - Property name\n    - Property description
-  - **Step 2: Property Type Specific Details**
-    - **For Flat/Apartment:**
+### 2.2 Advanced Property Listing Management
+- Multi-step property listing process:
+  - **Step 1: Basic Information**\n    - Property type selection (PG, hostel, flat, mess, vacant room space)
+    - Property name
+    - Property description
+  - **Step 2: Property Type Specific Details**\n    - **For Flat/Apartment:**
       - Configuration type (1 BHK, 2 BHK, 3 BHK, 4 BHK, 5+ BHK)
       - Number of bathrooms
       - Number of balconies
@@ -30,18 +30,23 @@ A professional management software designed for property owners of PG, hostels, 
       - Food included (Yes/No)
     - **For Mess:**
       - Seating capacity
-      - Meal types offered (Breakfast, Lunch, Dinner, Snacks)\n      - Food type (Veg, Non-veg, Both)
+      - Meal types offered (Breakfast, Lunch, Dinner, Snacks)
+      - Food type (Veg, Non-veg, Both)
       - Meal plan options (Monthly, Daily)
-    - **For Vacant Room Space:**\n      - Room size (in sq ft)
-      - Intended use (Residential, Commercial, Storage)\n      - Sharing type (Single, Shared)
-  - **Step 3: Location Details**\n    - State selection (dropdown with all Indian states)
+    - **For Vacant Room Space:**
+      - Room size (in sq ft)
+      - Intended use (Residential, Commercial, Storage)
+      - Sharing type (Single, Shared)
+  - **Step 3: Location Details**
+    - State selection (dropdown with all Indian states)
     - City selection (dropdown dynamically populated based on selected state)
     - Complete address
-    - Pincode\n    - Landmark
+    - Pincode
+    - Landmark
   - **Step 4: Property Specifications**
     - Property size (in sq ft)
-    - Total number of floors in property
-    - Floor-wise room distribution:\n      - Floor number
+    - Total number of floors in property\n    - Floor-wise room distribution:
+      - Floor number
       - Number of rooms on each floor
       - System auto-calculates total rooms across all floors
     - Age of property
@@ -49,88 +54,97 @@ A professional management software designed for property owners of PG, hostels, 
   - **Step 5: Pricing Details**
     - **For Flat/Apartment:**
       - Monthly rent
-      - Security deposit amount\n      - Maintenance charges
+      - Security deposit amount
+      - Maintenance charges
       - Brokerage (if applicable)
     - **For PG/Hostel:**
-      - Rent structure per sharing type (to be defined during room addition)\n      - Security deposit amount
+      - Rent structure per sharing type (to be defined during room addition)
+      - Security deposit amount
       - Maintenance charges (included/separate)
       - Meal charges (if applicable)
-    - **For Mess:**
-      - Monthly meal plan charges
-      - Daily meal charges
+    - **For Mess:**\n      - Monthly meal plan charges\n      - Daily meal charges
       - Security deposit
-    - **For Vacant Room Space:**
-      - Monthly rent
+    - **For Vacant Room Space:**\n      - Monthly rent
       - Security deposit
     - Electricity charges (included/separate)
     - Water charges (included/separate)
     - Other charges
   - **Step 6: Amenities**
-    - Checkboxes for amenities selection:
-      - WiFi
+    - Checkboxes for amenities selection:\n      - WiFi
       - Air Conditioning
-      - Parking\n      - Power Backup
-      - Laundry Service\n      - Housekeeping\n      - Security/CCTV
-      - Lift\n      - Water Purifier\n      - Refrigerator\n      - Microwave
+      - Parking
+      - Power Backup
+      - Laundry Service
+      - Housekeeping
+      - Security/CCTV
+      - Lift
+      - Water Purifier
+      - Refrigerator
+      - Microwave
       - TV
       - Washing Machine
       - Gym
       - Common Area
       - Attached Bathroom
       - Balcony
-      - Furnished
-      - Semi-Furnished
-      - Meals Included
-      - 24/7 Water Supply\n      - Geyser\n      - Cupboard
-      - Study Table
-      - Bed
+      - Furnished\n      - Semi-Furnished\n      - Meals Included\n      - 24/7 Water Supply
+      - Geyser
+      - Cupboard
+      - Study Table\n      - Bed
   - **Step 7: Rules and Preferences**
-    - Gender preference (Male/Female/Any)
-    - Food preference (Veg/Non-veg/Both)
+    - Gender preference (Male/Female/Any)\n    - Food preference (Veg/Non-veg/Both)
     - Smoking allowed (Yes/No)
     - Drinking allowed (Yes/No)
     - Pets allowed (Yes/No)
     - Visitor policy
-    - Gate closing time
-    - Notice period for vacating
+    - Gate closing time\n    - Notice period for vacating
   - **Step 8: Owner Contact Information**
     - Owner name
     - Contact number
     - Alternate contact number
-    - Email address
-    - Preferred contact time
-  - **Step 9: Media Upload**
+    - Email address\n    - Preferred contact time\n  - **Step 9: Media Upload**
     - Property exterior images upload (multiple)
     - Property common area images upload (multiple)
     - Property videos upload (optional)
-    - Virtual tour link (optional)\n  - **Step 10: Additional Details**
-    - Nearby landmarks (schools, hospitals, metro stations, bus stops)
-    - Distance from major locations
-    - Property highlights
+    - Virtual tour link (optional)
+  - **Step 10: Additional Details**
+    - Nearby landmarks (schools, hospitals, metro stations, bus stops)\n    - Distance from major locations\n    - Property highlights
     - Special instructions
   - **Step 11: Review and Submit**
     - Preview of all entered information
-    - Edit option for each section\n    - Final submission
+    - Edit option for each section
+    - Final submission
+- **Progress Save and Resume Functionality**
+  - Auto-save feature that saves progress at each step
+  - Manual save option available on every step
+  - Save as draft button visible throughout the form
+  - Resume from saved progress option on property listing page
+  - Display saved draft properties with completion percentage
+  - Option to continue editing or delete saved drafts
+  - Progress indicator showing which steps are completed
+  - Data persistence across sessions
+  - Notification when progress is successfully saved
 - Edit existing property information
 - Delete property listings
 - Property status management (Active/Inactive)
-\n### 2.3 Advanced Room Management System
+
+### 2.3 Advanced Room Management System
 - **Room Addition Interface** (accessible after property listing is completed)
-- **For PG/Hostel Properties:**\n  - Add individual rooms with following details:
-    - Floor number\n    - Room number/name\n    - Sharing type (Single sharing, Double sharing, Triple sharing, Four sharing, Dormitory)
-    - Number of beds in room\n    - Rent per seat/bed
+- **For PG/Hostel Properties:**
+  - Add individual rooms with following details:
+    - Floor number
+    - Room number/name
+    - Sharing type (Single sharing, Double sharing, Triple sharing, Four sharing, Dormitory)
+    - Number of beds in room
+    - Rent per seat/bed
     - Room size (in sq ft)
-    - Room-specific amenities (AC, Attached bathroom, Balcony, Window, Fan, Light, etc.)
-    - Current occupancy status
-    - Available seats
+    - Room-specific amenities (AC, Attached bathroom, Balcony, Window, Fan, Light, etc.)\n    - Current occupancy status\n    - Available seats
     - Room images upload (multiple images per room)
     - Room description
-- **For Flat/Apartment Properties:**
-  - Add room details:
+- **For Flat/Apartment Properties:**\n  - Add room details:
     - Room type (Bedroom, Living room, Kitchen, Bathroom, Balcony)
     - Room size (in sq ft)
-    - Room-specific amenities
-    - Room images upload (multiple images per room)
+    - Room-specific amenities\n    - Room images upload (multiple images per room)
 - **For Vacant Room Space:**
   - Room number/identifier
   - Room size
@@ -139,11 +153,12 @@ A professional management software designed for property owners of PG, hostels, 
 - Room editing and deletion capabilities
 - Bulk room addition option for similar room types
 - Room status management (Available/Occupied/Under Maintenance)
-\n### 2.4 Tenant Management System
-- Add tenant information:\n  - Tenant name
+
+### 2.4 Tenant Management System
+- Add tenant information:
+  - Tenant name
   - Contact details
-  - ID proof\n  - Check-in date
-  - Room assignment (owner can specify which room the tenant has booked)
+  - ID proof\n  - Check-in date\n  - Room assignment (owner can specify which room the tenant has booked)
   - Seat assignment (for PG/Hostel shared rooms)
 - Real-time occupancy update upon tenant room assignment
 - Tenant profile management
@@ -156,30 +171,32 @@ A professional management software designed for property owners of PG, hostels, 
 - Display of room sharing type and rent per seat
 - Room-wise availability display
 - Instant booking confirmation
-- Booking status updates
-- Seat-level booking for shared accommodations
+- Booking status updates\n- Seat-level booking for shared accommodations
 
 ### 2.6 Creative Visual Real-Time Occupancy Dashboard
-- Movie booking app style visual interface
-- Floor-wise layout display:\n  - Visual representation of each floor
+- Movie booking app style visual interface\n- Floor-wise layout display:\n  - Visual representation of each floor
   - Room arrangement on each floor
-  - Seat layout within each room (for PG/Hostel)\n- Color-coded occupancy indicators:\n  - Green: Available seats/rooms
+  - Seat layout within each room (for PG/Hostel)
+- Color-coded occupancy indicators:
+  - Green: Available seats/rooms
   - Red: Occupied seats/rooms
   - Yellow: Under maintenance
   - Blue: Reserved/Booked
-- Interactive room selection\n- Hover effects showing room details
+- Interactive room selection
+- Hover effects showing room details
 - Seat-by-seat status for shared accommodations
 - Real-time updates when tenant assignments change
-- Quick overview statistics:\n  - Total rooms
+- Quick overview statistics:
+  - Total rooms
   - Total seats (for PG/Hostel)
   - Occupied count
   - Available count
   - Occupancy percentage
-- Filter options:\n  - By floor
+- Filter options:
+  - By floor
   - By sharing type
   - By availability status
-- Zoom and pan functionality for large properties
-
+- Zoom and pan functionality for large properties\n
 ### 2.7 Property Management Tasks
 - Payment tracking
 - Maintenance requests handling
@@ -191,24 +208,23 @@ A professional management software designed for property owners of PG, hostels, 
 
 ### 2.8 Analytics and Reports
 - Occupancy rate reports (property-wise, floor-wise, and room-wise)
-- Revenue analysis (total and per room/seat)\n- Booking trends
-- Tenant demographics
+- Revenue analysis (total and per room/seat)
+- Booking trends\n- Tenant demographics
 - Financial summaries
 - Performance metrics
 - Sharing-type-wise revenue comparison
 - Custom date range reports
 - Room-wise profitability analysis
 - Floor-wise occupancy comparison
-
-## 3. User Roles
+\n## 3. User Roles
 - Property Owner (primary role for current version)
 
 ## 4. Design Requirements
-
-### 4.1 Theme and Color Scheme\n- Professional and modern design theme\n- Primary color palette with business-appropriate colors
-- Clean and intuitive user interface
-- Consistent visual hierarchy
-- Professional typography\n- Movie booking app inspired visual design for occupancy dashboard
+\n### 4.1 Theme and Color Scheme
+- Professional and modern design theme
+- Primary color palette with business-appropriate colors\n- Clean and intuitive user interface
+- Consistent visual hierarchy\n- Professional typography
+- Movie booking app inspired visual design for occupancy dashboard
 
 ### 4.2 User Experience
 - Step-by-step guided property listing process
@@ -220,10 +236,9 @@ A professional management software designed for property owners of PG, hostels, 
 - Intuitive room management interface
 - Visual room layout display
 - Easy image upload with preview
-- Drag-and-drop functionality for image uploads
-- Interactive floor and room visualization
-- Real-time occupancy status updates
+- Drag-and-drop functionality for image uploads\n- Interactive floor and room visualization\n- Real-time occupancy status updates
 - Smooth animations and transitions
+- Seamless resume experience from saved progress
 
 ## 5. Technical Requirements
 - Responsive web application
@@ -234,7 +249,7 @@ A professional management software designed for property owners of PG, hostels, 
 - Dashboard with data visualization
 - Location-based dropdown system (State → City hierarchy)
 - Form validation and data integrity checks
-- Draft saving functionality
+- Draft saving functionality with auto-save capability
 - Property-type-specific form rendering
 - Dynamic pricing calculation based on sharing type
 - Image compression and optimization
@@ -243,6 +258,8 @@ A professional management software designed for property owners of PG, hostels, 
 - Real-time occupancy tracking and updates
 - Interactive visual dashboard with movie booking style interface
 - WebSocket or similar technology for live updates
+- Local storage or database persistence for draft data
+- Session management for resume functionality
 
 ## 6. Geographic Scope
 - Application operates exclusively in India
@@ -253,14 +270,16 @@ A professional management software designed for property owners of PG, hostels, 
 1. Owner creates account and logs in
 2. Owner adds property through step-by-step listing process
 3. System adapts form fields based on selected property type
-4. Owner inputs floor details (total floors and rooms per floor)
-5. System auto-calculates total rooms\n6. Owner completes property listing and submits
-7. Owner proceeds to add individual rooms with specific details
-8. For PG/Hostel: Owner specifies sharing type, rent per seat, and food inclusion for each room
-9. Owner uploads images for each room
-10. Rooms become available for booking once added
-11. Owner adds tenant information and assigns specific room and seat
-12. System updates occupancy status in real-time upon tenant assignment
-13. Creative visual occupancy dashboard displays floor-wise, room-wise, and seat-wise status
-14. Owner manages bookings, tenants, and property operations through dashboard
-15. Real-time occupancy dashboard updates automatically with every change
+4. System auto-saves progress at each step
+5. Owner can manually save draft at any point and resume later
+6. Owner inputs floor details (total floors and rooms per floor)
+7. System auto-calculates total rooms
+8. Owner completes property listing and submits
+9. Owner proceeds to add individual rooms with specific details
+10. For PG/Hostel: Owner specifies sharing type, rent per seat, and food inclusion for each room
+11. Owner uploads images for each room
+12. Rooms become available for booking once added\n13. Owner adds tenant information and assigns specific room and seat
+14. System updates occupancy status in real-time upon tenant assignment
+15. Creative visual occupancy dashboard displays floor-wise, room-wise, and seat-wise status
+16. Owner manages bookings, tenants, and property operations through dashboard
+17. Real-time occupancy dashboard updates automatically with every change
