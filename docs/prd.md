@@ -10,7 +10,8 @@ A professional management software designed for property owners of PG, hostels, 
 ## 2. Core Features
 
 ### 2.1 Owner Account Management
-- Owner registration and login\n- Profile management
+- Owner registration and login
+- Profile management
 - Account settings
 \n### 2.2 Advanced Property Listing Management
 - Multi-step property listing process:\n  - **Step 1: Basic Information**
@@ -133,8 +134,8 @@ A professional management software designed for property owners of PG, hostels, 
   - When the specified number of rooms for a floor is reached, that floor is automatically removed from the floor selection dropdown
   - Visual indicator showing remaining room slots per floor (e.g., Floor 1: 3/5 rooms added)\n  - Prevents adding more rooms than originally specified in property details
   - Validation message if user attempts to exceed floor room limit
-  - Floor-wise room counter displayed during room addition process\n
-- **For PG/Hostel Properties:**
+  - Floor-wise room counter displayed during room addition process
+\n- **For PG/Hostel Properties:**
   - Add individual rooms with following details:
     - Floor number (dropdown populated from property details, showing only floors with available room slots)
     - Room number/name
@@ -149,7 +150,8 @@ A professional management software designed for property owners of PG, hostels, 
 - **For Flat/Apartment Properties:**
   - Add room details:\n    - Floor number (dropdown with floor quota validation)
     - Room type (Bedroom, Living room, Kitchen, Bathroom, Balcony)\n    - Room size (in sq ft)
-    - Room-specific amenities\n    - Room images upload (multiple images per room)\n- **For Vacant Room Space:**\n  - Floor number (dropdown with floor quota validation)
+    - Room-specific amenities\n    - Room images upload (multiple images per room)\n- **For Vacant Room Space:**
+  - Floor number (dropdown with floor quota validation)
   - Room number/identifier
   - Room size\n  - Current status (Available/Occupied)
   - Room images upload\n- Room editing and deletion capabilities (with automatic floor quota recalculation)
@@ -157,15 +159,14 @@ A professional management software designed for property owners of PG, hostels, 
 - Room status management (Available/Occupied/Under Maintenance)
 - Dashboard showing floor-wise room addition progress
 
-### 2.4 Tenant Management System\n- Add tenant information:\n  - Tenant name
+### 2.4 Tenant Management System
+- Add tenant information:\n  - Tenant name
   - Contact details
-  - ID proof
-  - Check-in date
+  - ID proof\n  - Check-in date
   - Room assignment (owner can specify which room the tenant has booked)
   - Seat assignment (for PG/Hostel shared rooms)
 - Real-time occupancy update upon tenant room assignment
-- Tenant profile management
-- Tenant history tracking
+- Tenant profile management\n- Tenant history tracking
 - Check-out management with automatic occupancy status update
 \n### 2.5 Real-Time Room Booking System
 - Live booking interface similar to movie booking systems
@@ -174,9 +175,9 @@ A professional management software designed for property owners of PG, hostels, 
 - Room-wise availability display
 - Instant booking confirmation\n- Booking status updates
 - Seat-level booking for shared accommodations
-\n### 2.6 Enhanced Cinema-Style Visual Real-Time Occupancy Dashboard
-- **Movie Theater Inspired Visual Interface**
-  - Cinema hall seating layout style visualization
+
+### 2.6 Enhanced Cinema-Style Visual Real-Time Occupancy Dashboard
+- **Movie Theater Inspired Visual Interface**\n  - Cinema hall seating layout style visualization
   - Property structure displayed as theater screen (property name/info at top)
   - Floor-wise sections displayed as theater rows
   - Rooms displayed as seat groups within each floor row
@@ -222,8 +223,7 @@ A professional management software designed for property owners of PG, hostels, 
   - Click on seat/bed for detailed information popup
   - Click on room group to see room-level details
   - Floor row headers clickable to expand/collapse floor view
-
-- **Visual Layout Controls:**
+\n- **Visual Layout Controls:**
   - Toggle between compact and expanded view
   - Zoom in/out functionality for large properties
   - Pan and scroll for navigation
@@ -298,7 +298,8 @@ A professional management software designed for property owners of PG, hostels, 
 
 - **Payment Timeline Configuration**
   - Owner can set payment due date offset (e.g., rent due on 1st, 5th, 10th, or 15th of every month)
-  - Owner can configure grace period for late payments (e.g., 3 days, 5 days, 7 days)\n  - Owner can set late payment penalty amount or percentage
+  - Owner can configure grace period for late payments (e.g., 3 days, 5 days, 7 days)
+  - Owner can set late payment penalty amount or percentage
   - Owner can define advance rent collection (e.g., first month, last month, or both)
 \n#### 2.8.2 Automated Payment Reminder System via WhatsApp
 - **Automatic Payment Reminder Messages**
@@ -339,13 +340,15 @@ A professional management software designed for property owners of PG, hostels, 
   - Sort options: By due date, by tenant name, by payment status, by amount
 
 - **Manual Payment Recording**
-  - Owner can manually mark payment as received\n  - Payment recording form includes:
-    - Tenant name (auto-populated)\n    - Payment amount
+  - Owner selects tenant from tenant list
+  - Owner adds payment details including:
+    - Rent amount (auto-populated from tenant's room/seat rent, editable)
     - Payment date
     - Payment method (Cash, Bank Transfer, UPI, Cheque, Online)
     - Transaction reference number (optional)
     - Receipt number (auto-generated)
     - Notes (optional)
+  - Owner can update payment details on monthly basis for each tenant
   - System automatically updates payment status upon recording
   - System sends automated WhatsApp confirmation message to tenant upon payment recording
   - Payment confirmation message includes:
@@ -438,7 +441,8 @@ A professional management software designed for property owners of PG, hostels, 
 \n### 2.9 Property Management Tasks\n- Payment tracking\n- Maintenance requests handling
 - Contract management
 - Booking history
-- Check-in/check-out management\n- Seat allocation management (for PG/Hostel)\n- Room transfer requests
+- Check-in/check-out management\n- Seat allocation management (for PG/Hostel)
+- Room transfer requests
 \n### 2.10 Analytics and Reports
 - Occupancy rate reports (property-wise, floor-wise, and room-wise)
 - Revenue analysis (total and per room/seat)
@@ -486,7 +490,7 @@ A professional management software designed for property owners of PG, hostels, 
 - One-click WhatsApp group management
 - Intuitive payment management dashboard with visual indicators
 - Interactive payment analytics graphs and charts
-- Easy payment recording interface
+- Easy payment recording interface with tenant selection
 - Real-time payment status updates
 - Visual payment timeline tracking
 \n## 5. Technical Requirements
@@ -532,6 +536,8 @@ A professional management software designed for property owners of PG, hostels, 
 - Email notification system for payment reports
 - Real-time payment notification system
 - Payment receipt generation and storage
+- Tenant selection interface for payment recording
+- Monthly payment update functionality
 \n## 6. Geographic Scope
 - Application operates exclusively in India
 - State dropdown includes all Indian states and union territories
@@ -562,27 +568,27 @@ A professional management software designed for property owners of PG, hostels, 
 27. System automatically sends payment reminder WhatsApp messages to tenant according to configured schedule (7 days before, 3 days before, 1 day before, on due date, and daily after due date if payment not received)
 28. Owner receives payment indicators and notifications on dashboard showing upcoming due dates and overdue payments
 29. Owner can view payment timeline for all tenants with color-coded status indicators (Paid/Pending/Overdue)
-30. Owner manually records payment received from tenant through payment management interface
-31. System automatically updates payment status and sends WhatsApp payment confirmation message to tenant
-32. System generates visual payment analytics graphs showing:
-    - Payment collection timeline with date-wise payment amounts
+30. Owner selects tenant from tenant list to add payment\n31. Owner enters payment details including rent amount, payment date, payment method, transaction reference, and notes
+32. Owner can update payment details on monthly basis for each tenant
+33. System automatically updates payment status and sends WhatsApp payment confirmation message to tenant
+34. System generates visual payment analytics graphs showing:\n    - Payment collection timeline with date-wise payment amounts
     - Payment status distribution chart
     - Monthly revenue comparison bar graph
     - Tenant-wise payment timeline heatmap
     - Payment method distribution chart
     - Outstanding amount tracker
-33. Owner can view detailed payment history and generate payment reports
-34. Enhanced cinema-style visual occupancy dashboard displays:
+35. Owner can view detailed payment history and generate payment reports
+36. Enhanced cinema-style visual occupancy dashboard displays:
     - Property layout as theater screen
     - Floors as theater rows
     - Rooms as seat groups
     - Individual beds/seats as cinema seat icons
     - Real-time color-coded occupancy status for each seat/bed
-35. Owner manages bookings, tenants, and property operations through dashboard
-36. Real-time occupancy dashboard updates automatically with smooth animations for every change
-37. Owner can interact with visual dashboard to view detailed information by hovering or clicking on seats/rooms
-38. Owner can send broadcast messages to all tenants through WhatsApp group management interface
-39. When tenant checks out, system can automatically remove tenant from WhatsApp group (if enabled)
-40. If owner edits or deletes rooms, system automatically recalculates floor quota and updates available floors in dropdown
-41. System continues to track payment cycles and send automated reminders for all active tenants
-42. Owner can view comprehensive payment analytics and reports to monitor revenue collection efficiency
+37. Owner manages bookings, tenants, and property operations through dashboard
+38. Real-time occupancy dashboard updates automatically with smooth animations for every change
+39. Owner can interact with visual dashboard to view detailed information by hovering or clicking on seats/rooms
+40. Owner can send broadcast messages to all tenants through WhatsApp group management interface
+41. When tenant checks out, system can automatically remove tenant from WhatsApp group (if enabled)
+42. If owner edits or deletes rooms, system automatically recalculates floor quota and updates available floors in dropdown
+43. System continues to track payment cycles and send automated reminders for all active tenants
+44. Owner can view comprehensive payment analytics and reports to monitor revenue collection efficiency

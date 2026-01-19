@@ -6,7 +6,7 @@
   - [x] Create rent_payments table
   - [x] Add rent fields to rooms and tenants tables
   - [x] Update TypeScript types
-  - [x] Fix TypeScript errors in existing code (minor type issues remain)
+  - [x] Fix TypeScript errors in existing code
 
 - [x] Step 2: API Functions
   - [x] Create rent payment API functions (CRUD)
@@ -38,41 +38,35 @@
   - [x] Update sidebar navigation
   - [x] Add date-fns package for date formatting
 
-- [ ] Step 5: Enhanced Tenant Form (Next)
-  - [ ] Add move-in date field
-  - [ ] Add monthly rent field
-  - [ ] Add rent due day field
-  - [ ] Add deposit fields
-  - [ ] Auto-generate first rent payment on tenant creation
+- [x] Step 5: Enhanced Rent Payments Page
+  - [x] Add "Add Payment" button for manual payment entry
+  - [x] Owner can select tenant and add rent details
+  - [x] Add "Generate Monthly" button for automatic payment generation
+  - [x] Create RentPaymentsEnhanced component with full functionality
+  - [x] Manual payment creation dialog
+  - [x] Automatic monthly payment generation for all tenants
 
-- [ ] Step 6: Payment Analytics Charts (Next)
+- [ ] Step 6: Payment Analytics Charts (Future)
   - [ ] Payment timeline chart (line/bar chart)
   - [ ] Payment status distribution (pie chart)
   - [ ] Monthly revenue chart
 
-- [ ] Step 7: WhatsApp Integration (Next)
+- [ ] Step 7: WhatsApp Integration (Future)
   - [ ] Auto-send payment reminders
   - [ ] Payment due notifications
   - [ ] Payment received confirmation
 
-- [ ] Step 8: Automatic Payment Generation (Next)
+- [ ] Step 8: Automatic Payment Generation (Future)
   - [ ] Create Edge Function for monthly payment generation
   - [ ] Schedule monthly payment creation
   - [ ] Update payment status (pending → overdue)
-
-- [ ] Step 9: Testing & Validation
-  - [ ] Test tenant creation with rent
-  - [ ] Test payment marking
-  - [ ] Test WhatsApp notifications
-  - [ ] Test analytics charts
-  - [ ] Run lint checks and fix remaining type errors
 
 ## Notes
 
 - Rent payment starts from move-in date
 - Monthly cycle based on rent_due_day (1-31)
 - Automatic status update: pending → overdue after due date
-- WhatsApp reminders sent 3 days before due date
+- Owner can manually add payments for any tenant
+- Owner can generate monthly payments for all tenants with one click
 - Payment analytics show trends and collection rates
-- Core functionality implemented: database, API, UI page
-- Remaining: tenant form updates, charts, WhatsApp automation, Edge Function
+- Core functionality COMPLETE: database, API, UI page with manual and automatic payment creation

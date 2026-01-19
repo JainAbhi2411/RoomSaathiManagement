@@ -11,7 +11,7 @@ import OccupancyDashboard from './pages/OccupancyDashboard';
 import WhatsAppSettings from './pages/WhatsAppSettings';
 import Tenants from './pages/Tenants';
 import Payments from './pages/Payments';
-import RentPayments from './pages/RentPayments';
+import RentPayments from './pages/RentPaymentsEnhanced';
 import Maintenance from './pages/Maintenance';
 import Contracts from './pages/Contracts';
 import Analytics from './pages/Analytics';
