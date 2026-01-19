@@ -18,7 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Building2, Plus, Edit, Trash2, Eye, MapPin } from 'lucide-react';
+import { Building2, Plus, Edit, Trash2, Eye, MapPin, Shield } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const propertyTypeLabels: Record<string, string> = {

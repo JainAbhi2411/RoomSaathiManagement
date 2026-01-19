@@ -1,83 +1,62 @@
-# Task: Rent Payment System Implementation
+# Task: Admin Dashboard and Property Verification System
 
 ## Plan
 
-- [x] Step 1: Database & Types Setup
-  - [x] Create rent_payments table
-  - [x] Add rent fields to rooms and tenants tables
-  - [x] Update TypeScript types
-  - [x] Fix TypeScript errors in existing code
+- [x] Step 1: Database Schema for Admin & Verification
+  - [x] Add is_admin column to profiles table
+  - [x] Add verification fields to properties (is_verified, verified_at, verified_by)
+  - [x] Create property_verifications log table
+  - [x] Add RLS policies for admin access
+  - [x] Create indexes for admin queries
 
-- [x] Step 2: API Functions
-  - [x] Create rent payment API functions (CRUD)
-  - [x] Add function to generate monthly rent payments
-  - [x] Add function to mark payment as paid
-  - [x] Add function to get payment analytics
-  - [x] Add getRentPayments with filters
-  - [x] Add getRentPaymentById
-  - [x] Add createRentPayment
-  - [x] Add updateRentPayment
-  - [x] Add deleteRentPayment
-  - [x] Add markRentPaymentAsPaid
-  - [x] Add generateMonthlyRentPayment
-  - [x] Add getRentPaymentAnalytics
+- [x] Step 2: TypeScript Types
+  - [x] Add is_admin to Profile interface
+  - [x] Add verification fields to Property interface
+  - [x] Create PropertyVerification interface
 
-- [x] Step 3: Rent Payments Page
-  - [x] Create RentPayments page component
-  - [x] Payment status cards (pending, paid, overdue)
-  - [x] Payment list/table with filters
-  - [x] Mark as paid functionality
-  - [x] Payment method selection
-  - [x] Transaction ID input
-  - [x] Notes field
-  - [x] Collection rate display
-  - [x] Property and status filters
+- [x] Step 3: API Functions
+  - [x] getAllPropertiesForAdmin - fetch all properties with owner details
+  - [x] verifyProperty - mark property as verified
+  - [x] rejectPropertyVerification - reject verification with notes
+  - [x] checkIsAdmin - check if user has admin privileges
 
-- [x] Step 4: Navigation & Routes
-  - [x] Add RentPayments route
-  - [x] Update sidebar navigation
-  - [x] Add date-fns package for date formatting
+- [x] Step 4: Admin Dashboard Page
+  - [x] Create AdminDashboard.tsx component
+  - [x] Admin access check and redirect
+  - [x] Stats cards (Total, Verified, Pending properties)
+  - [x] Property listing table with owner details
+  - [x] Filter by verification status (All/Verified/Pending)
+  - [x] Verify and Reject actions with dialogs
+  - [x] Notes field for verification/rejection
 
-- [x] Step 5: Enhanced Rent Payments Page
-  - [x] Add "Add Payment" button for manual payment entry
-  - [x] Owner can select tenant and add rent details
-  - [x] Add "Generate Monthly" button for automatic payment generation
-  - [x] Create RentPaymentsEnhanced component with full functionality
-  - [x] Manual payment creation dialog
-  - [x] Automatic monthly payment generation for all tenants
+- [x] Step 5: Verification Badge Display
+  - [x] Add "Verified by Roomsaathi" badge to property listings
+  - [x] Show verification status in property cards
+  - [x] Add Shield icon for verified properties
 
-- [x] Step 6: Next Payment Indicators & Revenue Tracking
-  - [x] Show "Next payment due" indicator for paid payments
-  - [x] Calculate next payment date based on current payment
-  - [x] Display next payment date in payment list
-  - [x] Add revenue overview cards (Total, Pending, Overdue)
-  - [x] Update Dashboard payment links to rent-payments
-  - [x] Show all payment details with revenue breakdown
+- [x] Step 6: Routing
+  - [x] Add /admin route for AdminDashboard
+  - [x] Set route as non-visible in sidebar (admin-only access)
 
-- [ ] Step 7: Payment Analytics Charts (Future)
-  - [ ] Payment timeline chart (line/bar chart)
-  - [ ] Payment status distribution (pie chart)
-  - [ ] Monthly revenue chart
+- [ ] Step 7: Admin User Creation (Manual)
+  - [ ] Create admin user in database
+  - [ ] Set is_admin = TRUE for admin profile
+  - [ ] Test admin login and access
 
-- [ ] Step 8: WhatsApp Integration (Future)
-  - [ ] Auto-send payment reminders
-  - [ ] Payment due notifications
-  - [ ] Payment received confirmation
-
-- [ ] Step 9: Automatic Payment Generation (Future)
-  - [ ] Create Edge Function for monthly payment generation
-  - [ ] Schedule monthly payment creation
-  - [ ] Update payment status (pending → overdue)
+- [ ] Step 8: Property Details Enhancement (Future)
+  - [ ] Show verification badge on property details page
+  - [ ] Display verification date and admin info
+  - [ ] Show verification history
 
 ## Notes
 
-- Rent payment starts from move-in date
-- Monthly cycle based on rent_due_day (1-31)
-- Automatic status update: pending → overdue after due date
-- Owner can manually add payments for any tenant
-- Owner can generate monthly payments for all tenants with one click
-- Payment analytics show trends and collection rates
-- **Next Payment Indicator**: Shows next due date for paid payments (current due date + 1 month)
-- **Revenue Tracking**: Total revenue (all paid), Pending revenue, Overdue amount displayed
-- **Dashboard Integration**: Payment links updated to point to rent-payments page
-- Core functionality COMPLETE: database, API, UI page with manual/automatic payment creation, next payment indicators, revenue tracking
+- Admin system implemented with role-based access control
+- Admins can view all properties with owner details (name, email, phone)
+- Verification workflow: Admin reviews → Verify/Reject → Property marked accordingly
+- Verified properties display "Verified by Roomsaathi" badge with Shield icon
+- Verification logs stored in property_verifications table for audit trail
+- RLS policies ensure only admins can access admin functions
+- Admin dashboard accessible at /admin route (not shown in sidebar)
+- Property owners see verification badge on their property listings
+- **To create admin user**: Update profiles table, set is_admin = TRUE for specific user
+- Core admin functionality COMPLETE: database, API, UI, verification workflow, badge display

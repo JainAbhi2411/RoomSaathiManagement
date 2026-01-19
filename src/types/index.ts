@@ -23,6 +23,7 @@ export interface Profile {
   role: UserRole;
   created_at: string;
   updated_at: string;
+  is_admin?: boolean;
 }
 
 export interface Property {
@@ -46,6 +47,24 @@ export interface Property {
   number_of_floors: number;
   rooms_per_floor: number;
   food_included: boolean;
+  is_verified?: boolean;
+  verified_at?: string;
+  verified_by?: string;
+  created_at: string;
+  updated_at: string;
+  owner?: {
+    username: string | null;
+    email: string | null;
+    phone?: string | null;
+  };
+}
+
+export interface PropertyVerification {
+  id: string;
+  property_id: string;
+  admin_id: string;
+  status: 'pending' | 'verified' | 'rejected';
+  notes?: string;
   created_at: string;
   updated_at: string;
 }

@@ -25,6 +25,84 @@ export const getProperties = async (ownerId?: string) => {
   return Array.isArray(data) ? data : [];
 };
 
+// Admin: Get all properties with owner details
+export const getAllPropertiesForAdmin = async (): Promise<Property[]> => {
+  const { data, error } = await supabase
+    .from('properties')
+    .select(`
+      *,
+      owner:profiles!properties_owner_id_fkey(username, email, phone)
+    `)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+};
+
+// Admin: Verify property
+export const verifyProperty = async (propertyId: string, adminId: string, notes?: string): Promise<void> => {
+  const { error: updateError } = await supabase
+    .from('properties')
+    .update({
+      is_verified: true,
+      verified_at: new Date().toISOString(),
+      verified_by: adminId,
+    })
+    .eq('id', propertyId);
+
+  if (updateError) throw updateError;
+
+  // Log verification
+  const { error: logError } = await supabase
+    .from('property_verifications')
+    .insert({
+      property_id: propertyId,
+      admin_id: adminId,
+      status: 'verified',
+      notes: notes || null,
+    });
+
+  if (logError) throw logError;
+};
+
+// Admin: Reject property verification
+export const rejectPropertyVerification = async (propertyId: string, adminId: string, notes: string): Promise<void> => {
+  const { error: updateError } = await supabase
+    .from('properties')
+    .update({
+      is_verified: false,
+      verified_at: null,
+      verified_by: null,
+    })
+    .eq('id', propertyId);
+
+  if (updateError) throw updateError;
+
+  // Log rejection
+  const { error: logError } = await supabase
+    .from('property_verifications')
+    .insert({
+      property_id: propertyId,
+      admin_id: adminId,
+      status: 'rejected',
+      notes,
+    });
+
+  if (logError) throw logError;
+};
+
+// Check if user is admin
+export const checkIsAdmin = async (userId: string): Promise<boolean> => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('is_admin')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data?.is_admin || false;
+};
+
 export const getPropertyById = async (id: string): Promise<PropertyWithRooms | null> => {
   const { data, error } = await supabase
     .from('properties')

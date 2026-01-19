@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import Properties from './pages/Properties';
 import PropertyForm from './pages/PropertyForm';
 import PropertyDetails from './pages/PropertyDetails';
@@ -34,6 +35,12 @@ const routes: RouteConfig[] = [
     name: 'Dashboard',
     path: '/',
     element: <Dashboard />,
+  },
+  {
+    name: 'Admin Dashboard',
+    path: '/admin',
+    element: <AdminDashboard />,
+    visible: false,
   },
   {
     name: 'Properties',
