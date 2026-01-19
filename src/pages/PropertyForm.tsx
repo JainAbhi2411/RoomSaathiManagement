@@ -335,8 +335,8 @@ export default function PropertyForm() {
           title: 'Success',
           description: 'Property created successfully! You can now add rooms.',
         });
-        // Redirect to property details or room management
-        navigate(`/properties/${newProperty.id}`);
+        // Redirect to room management
+        navigate(`/properties/${newProperty.id}/rooms`);
         return;
       }
 
