@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Plus, DoorOpen, Calendar } from 'lucide-react';
+import { ArrowLeft, Plus, DoorOpen, Calendar, MessageCircle } from 'lucide-react';
 
 export default function PropertyDetails() {
   const { id } = useParams();
@@ -139,6 +139,12 @@ export default function PropertyDetails() {
               <Button variant="outline" className="w-full justify-start">
                 <Calendar className="mr-2 h-4 w-4" />
                 Book Room
+              </Button>
+            </Link>
+            <Link to={`/properties/${property.id}/whatsapp`}>
+              <Button variant="outline" className="w-full justify-start">
+                <MessageCircle className="mr-2 h-4 w-4" />
+                WhatsApp Settings
               </Button>
             </Link>
             <Link to="/vacancy">

@@ -6,13 +6,11 @@
 Property Management Pro
 
 ### 1.2 Application Description
-A professional management software designed for property owners of PG, hostels, flats, mess, and vacant rental spaces in India. The platform enables owners to create accounts, list properties with comprehensive information, and manage all property-related tasks including real-time room booking, vacancy tracking, and analytics. The application features a professional theme with a modern color scheme and an advanced step-by-step property listing process with property-type-specific information collection, detailed room management capabilities, and a highly visual cinema-style occupancy dashboard that displays floor layouts, room arrangements, and individual seat/bed occupancy status.
-
+A professional management software designed for property owners of PG, hostels, flats, mess, and vacant rental spaces in India. The platform enables owners to create accounts, list properties with comprehensive information, and manage all property-related tasks including real-time room booking, vacancy tracking, and analytics. The application features a professional theme with a modern color scheme and an advanced step-by-step property listing process with property-type-specific information collection, detailed room management capabilities, and a highly visual cinema-style occupancy dashboard that displays floor layouts, room arrangements, and individual seat/bed occupancy status. Additionally, the system includes automated WhatsApp group management for seamless tenant communication and onboarding.\n
 ## 2. Core Features
 
 ### 2.1 Owner Account Management
-- Owner registration and login\n- Profile management
-- Account settings
+- Owner registration and login\n- Profile management\n- Account settings
 \n### 2.2 Advanced Property Listing Management
 - Multi-step property listing process:\n  - **Step 1: Basic Information**
     - Property type selection (PG, hostel, flat, mess, vacant room space)
@@ -26,7 +24,8 @@ A professional management software designed for property owners of PG, hostels, 
       - Availability type (Entire flat, Shared flat)\n    - **For PG/Hostel:**
       - Total capacity (number of beds)
       - Room sharing types available (Single, Double, Triple, Four sharing, Dormitory)
-      - Gender accommodation (Boys, Girls, Co-ed)\n      - Meal plans available (Breakfast, Lunch, Dinner, All meals, No meals)
+      - Gender accommodation (Boys, Girls, Co-ed)
+      - Meal plans available (Breakfast, Lunch, Dinner, All meals, No meals)
       - Food included (Yes/No)
     - **For Mess:**
       - Seating capacity
@@ -35,10 +34,8 @@ A professional management software designed for property owners of PG, hostels, 
       - Room size (in sq ft)
       - Intended use (Residential, Commercial, Storage)
       - Sharing type (Single, Shared)\n  - **Step 3: Location Details**
-    - State selection (dropdown with all Indian states)
-    - City selection (dropdown dynamically populated based on selected state)
-    - Complete address
-    - Pincode
+    - State selection (dropdown with all Indian states)\n    - City selection (dropdown dynamically populated based on selected state)
+    - Complete address\n    - Pincode
     - Landmark
   - **Step 4: Property Specifications**
     - Property size (in sq ft)
@@ -46,8 +43,7 @@ A professional management software designed for property owners of PG, hostels, 
     - Floor-wise room distribution:\n      - Floor number
       - Number of rooms on each floor
       - System auto-calculates total rooms across all floors
-    - Age of property
-    - Facing direction
+    - Age of property\n    - Facing direction
   - **Step 5: Pricing Details**
     - **For Flat/Apartment:**\n      - Monthly rent
       - Security deposit amount
@@ -62,7 +58,8 @@ A professional management software designed for property owners of PG, hostels, 
       - Daily meal charges
       - Security deposit\n    - **For Vacant Room Space:**
       - Monthly rent
-      - Security deposit\n    - Electricity charges (included/separate)
+      - Security deposit
+    - Electricity charges (included/separate)
     - Water charges (included/separate)
     - Other charges\n  - **Step 6: Amenities**
     - Checkboxes for amenities selection:\n      - WiFi
@@ -74,7 +71,8 @@ A professional management software designed for property owners of PG, hostels, 
       - Lift
       - Water Purifier
       - Refrigerator
-      - Microwave\n      - TV
+      - Microwave
+      - TV
       - Washing Machine
       - Gym
       - Common Area
@@ -94,7 +92,8 @@ A professional management software designed for property owners of PG, hostels, 
     - Smoking allowed (Yes/No)
     - Drinking allowed (Yes/No)
     - Pets allowed (Yes/No)
-    - Visitor policy\n    - Gate closing time
+    - Visitor policy
+    - Gate closing time
     - Notice period for vacating
   - **Step 8: Owner Contact Information**
     - Owner name
@@ -102,7 +101,8 @@ A professional management software designed for property owners of PG, hostels, 
     - Alternate contact number
     - Email address\n    - Preferred contact time
   - **Step 9: Media Upload**
-    - Property exterior images upload (multiple)\n    - Property common area images upload (multiple)
+    - Property exterior images upload (multiple)
+    - Property common area images upload (multiple)
     - Property videos upload (optional)
     - Virtual tour link (optional)
   - **Step 10: Additional Details**
@@ -136,8 +136,7 @@ A professional management software designed for property owners of PG, hostels, 
   - Visual indicator showing remaining room slots per floor (e.g., Floor 1: 3/5 rooms added)\n  - Prevents adding more rooms than originally specified in property details
   - Validation message if user attempts to exceed floor room limit
   - Floor-wise room counter displayed during room addition process
-
-- **For PG/Hostel Properties:**
+\n- **For PG/Hostel Properties:**
   - Add individual rooms with following details:
     - Floor number (dropdown populated from property details, showing only floors with available room slots)
     - Room number/name
@@ -152,10 +151,7 @@ A professional management software designed for property owners of PG, hostels, 
 - **For Flat/Apartment Properties:**
   - Add room details:\n    - Floor number (dropdown with floor quota validation)
     - Room type (Bedroom, Living room, Kitchen, Bathroom, Balcony)\n    - Room size (in sq ft)
-    - Room-specific amenities\n    - Room images upload (multiple images per room)\n- **For Vacant Room Space:**
-  - Floor number (dropdown with floor quota validation)
-  - Room number/identifier
-  - Room size\n  - Current status (Available/Occupied)
+    - Room-specific amenities\n    - Room images upload (multiple images per room)\n- **For Vacant Room Space:**\n  - Floor number (dropdown with floor quota validation)\n  - Room number/identifier\n  - Room size\n  - Current status (Available/Occupied)
   - Room images upload\n- Room editing and deletion capabilities (with automatic floor quota recalculation)
 - Bulk room addition option for similar room types (with floor quota validation)
 - Room status management (Available/Occupied/Under Maintenance)
@@ -170,7 +166,8 @@ A professional management software designed for property owners of PG, hostels, 
 - Real-time occupancy update upon tenant room assignment
 - Tenant profile management\n- Tenant history tracking
 - Check-out management with automatic occupancy status update
-\n### 2.5 Real-Time Room Booking System
+
+### 2.5 Real-Time Room Booking System
 - Live booking interface similar to movie booking systems
 - Visual room and seat selection (for PG/Hostel)
 - Display of room sharing type and rent per seat
@@ -180,7 +177,8 @@ A professional management software designed for property owners of PG, hostels, 
 - Seat-level booking for shared accommodations
 
 ### 2.6 Enhanced Cinema-Style Visual Real-Time Occupancy Dashboard
-- **Movie Theater Inspired Visual Interface**\n  - Cinema hall seating layout style visualization
+- **Movie Theater Inspired Visual Interface**
+  - Cinema hall seating layout style visualization
   - Property structure displayed as theater screen (property name/info at top)
   - Floor-wise sections displayed as theater rows
   - Rooms displayed as seat groups within each floor row
@@ -233,8 +231,7 @@ A professional management software designed for property owners of PG, hostels, 
   - Full-screen mode option
   - Floor selector for quick navigation
   - Room type filter (Single/Double/Triple/Four sharing/Dormitory)
-
-- **Real-Time Statistics Panel:**
+\n- **Real-Time Statistics Panel:**
   - Total floors\n  - Total rooms
   - Total beds/seats (for PG/Hostel)\n  - Currently occupied count
   - Currently available count
@@ -242,27 +239,62 @@ A professional management software designed for property owners of PG, hostels, 
   - Floor-wise occupancy breakdown
   - Room-type-wise occupancy breakdown
   - Revenue metrics
-
-- **Legend and Guide:**
+\n- **Legend and Guide:**
   - Color legend explaining status indicators
   - Visual guide showing seat/room representation
   - Quick help tooltip\n\n- **Responsive Design:**
   - Adapts to screen size while maintaining cinema-style layout
   - Mobile-optimized touch interactions
   - Tablet view with optimized spacing
-
-- **Real-Time Updates:**
+\n- **Real-Time Updates:**
   - Instant visual update when tenant is assigned\n  - Smooth color transition animations
   - Live sync across multiple devices
   - Notification badges for recent changes
 
-### 2.7 Property Management Tasks
+### 2.7 Automated WhatsApp Group Management System
+- **Automatic WhatsApp Group Creation**
+  - System automatically creates a WhatsApp group for each property using the owner's registered contact number
+  - Group naming convention: Property name + PG/Hostel Group (e.g., Sunshine PG Group)
+  - Owner becomes the group admin automatically
+  - Group creation triggered upon property listing completion
+\n- **Automatic Tenant Addition to WhatsApp Group**
+  - When a tenant is assigned a room and marked as occupied in the system, the tenant is automatically added to the property's WhatsApp group
+  - System uses the tenant's contact number provided during tenant registration
+  - Addition happens in real-time upon room occupancy confirmation
+  - Tenant receives group invitation automatically
+
+- **Personalized Welcome Message**
+  - Upon tenant addition to the WhatsApp group, system automatically sends a personalized welcome message to the tenant
+  - Welcome message includes:
+    - Tenant name
+    - Property name
+    - Room number and seat/bed number (if applicable)
+    - Check-in date
+    - Owner contact information
+    - Important property rules and guidelines
+    - Amenities available
+    - Emergency contact details
+  - Message template customizable by owner
+
+- **WhatsApp Integration Management**
+  - Owner can enable/disable WhatsApp group management feature
+  - Owner can customize welcome message template
+  - Owner can view list of group members
+  - System maintains sync between tenant occupancy status and WhatsApp group membership
+  - When tenant checks out, option to remove from WhatsApp group automatically
+
+- **Group Communication Features**
+  - Owner can send broadcast messages to all tenants through the system
+  - Announcement feature for important updates
+  - Message history tracking
+  - Group activity logs
+\n### 2.8 Property Management Tasks
 - Payment tracking\n- Maintenance requests handling
 - Contract management
 - Booking history
 - Check-in/check-out management
 - Seat allocation management (for PG/Hostel)\n- Room transfer requests
-\n### 2.8 Analytics and Reports
+\n### 2.9 Analytics and Reports
 - Occupancy rate reports (property-wise, floor-wise, and room-wise)
 - Revenue analysis (total and per room/seat)
 - Booking trends
@@ -303,6 +335,8 @@ A professional management software designed for property owners of PG, hostels, 
 - Zoom, pan, and navigation controls for large properties
 - Visual feedback for floor room quota limits
 - Clear indicators for remaining room slots per floor
+- Seamless WhatsApp integration with minimal user intervention
+- One-click WhatsApp group management
 \n## 5. Technical Requirements
 - Responsive web application
 - Real-time data synchronization
@@ -330,12 +364,17 @@ A professional management software designed for property owners of PG, hostels, 
 - Floor-wise room quota tracking and validation logic
 - Dynamic dropdown population based on remaining floor capacity
 - Real-time room counter per floor
-\n## 6. Geographic Scope
+- WhatsApp Business API integration for automated group management
+- Automated message sending capabilities
+- Contact synchronization with WhatsApp\n- Group creation and member management APIs
+- Message template management system
+- Real-time WhatsApp group sync with tenant occupancy status
+
+## 6. Geographic Scope
 - Application operates exclusively in India
 - State dropdown includes all Indian states and union territories
 - City dropdown dynamically populated based on selected state
-\n## 7. Workflow
-1. Owner creates account and logs in
+\n## 7. Workflow\n1. Owner creates account and logs in
 2. Owner adds property through step-by-step listing process
 3. System adapts form fields based on selected property type
 4. System auto-saves progress at each step
@@ -343,22 +382,26 @@ A professional management software designed for property owners of PG, hostels, 
 6. Owner inputs floor details (total floors and rooms per floor)
 7. System auto-calculates total rooms and stores floor-wise room quota
 8. Owner completes property listing and submits
-9. Owner proceeds to add individual rooms with specific details
-10. System fetches floor configuration from property details
-11. Floor dropdown displays only floors with remaining room quota
-12. System shows visual indicator of remaining room slots per floor (e.g., Floor 1: 3/5 rooms added)\n13. When owner adds a room, system decrements the available room count for that floor
-14. Once a floor reaches its room limit, that floor is automatically removed from the floor selection dropdown
-15. System validates and prevents adding more rooms than specified for each floor
-16. For PG/Hostel: Owner specifies sharing type, rent per seat, and food inclusion for each room
-17. Owner uploads images for each room
-18. Rooms become available for booking once added\n19. Owner adds tenant information and assigns specific room and seat
-20. System updates occupancy status in real-time upon tenant assignment
-21. Enhanced cinema-style visual occupancy dashboard displays:
-    - Property layout as theater screen
+9. System automatically creates a WhatsApp group for the property using owner's contact number
+10. Owner becomes the WhatsApp group admin
+11. Owner proceeds to add individual rooms with specific details
+12. System fetches floor configuration from property details
+13. Floor dropdown displays only floors with remaining room quota
+14. System shows visual indicator of remaining room slots per floor (e.g., Floor 1: 3/5 rooms added)\n15. When owner adds a room, system decrements the available room count for that floor
+16. Once a floor reaches its room limit, that floor is automatically removed from the floor selection dropdown
+17. System validates and prevents adding more rooms than specified for each floor
+18. For PG/Hostel: Owner specifies sharing type, rent per seat, and food inclusion for each room
+19. Owner uploads images for each room
+20. Rooms become available for booking once added\n21. Owner adds tenant information and assigns specific room and seat\n22. System updates occupancy status in real-time upon tenant assignment
+23. System automatically adds the tenant to the property's WhatsApp group using tenant's contact number
+24. System sends personalized welcome message to the tenant via WhatsApp including property details, room information, and important guidelines
+25. Enhanced cinema-style visual occupancy dashboard displays:\n    - Property layout as theater screen
     - Floors as theater rows
     - Rooms as seat groups\n    - Individual beds/seats as cinema seat icons
     - Real-time color-coded occupancy status for each seat/bed
-22. Owner manages bookings, tenants, and property operations through dashboard
-23. Real-time occupancy dashboard updates automatically with smooth animations for every change
-24. Owner can interact with visual dashboard to view detailed information by hovering or clicking on seats/rooms
-25. If owner edits or deletes rooms, system automatically recalculates floor quota and updates available floors in dropdown
+26. Owner manages bookings, tenants, and property operations through dashboard
+27. Real-time occupancy dashboard updates automatically with smooth animations for every change
+28. Owner can interact with visual dashboard to view detailed information by hovering or clicking on seats/rooms
+29. Owner can send broadcast messages to all tenants through WhatsApp group management interface
+30. When tenant checks out, system can automatically remove tenant from WhatsApp group (if enabled)
+31. If owner edits or deletes rooms, system automatically recalculates floor quota and updates available floors in dropdown

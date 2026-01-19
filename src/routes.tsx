@@ -8,6 +8,7 @@ import RoomManagement from './pages/RoomManagement';
 import RoomBooking from './pages/RoomBooking';
 import VacancyDashboard from './pages/VacancyDashboard';
 import OccupancyDashboard from './pages/OccupancyDashboard';
+import WhatsAppSettings from './pages/WhatsAppSettings';
 import Tenants from './pages/Tenants';
 import Payments from './pages/Payments';
 import Maintenance from './pages/Maintenance';
@@ -66,6 +67,12 @@ const routes: RouteConfig[] = [
     name: 'Room Booking',
     path: '/properties/:id/booking',
     element: <RoomBooking />,
+    visible: false,
+  },
+  {
+    name: 'WhatsApp Settings',
+    path: '/properties/:id/whatsapp',
+    element: <WhatsAppSettings />,
     visible: false,
   },
   {

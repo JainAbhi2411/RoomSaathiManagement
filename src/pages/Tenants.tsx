@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getTenants, createTenant, updateTenant, deleteTenant, getProperties, getRoomsByProperty, updateRoom } from '@/db/api';
+import { supabase } from '@/db/supabase';
 import type { Tenant, Property, Room } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -181,7 +182,7 @@ export default function Tenants() {
           description: 'Tenant updated successfully',
         });
       } else {
-        await createTenant(tenantData);
+        const newTenant = await createTenant(tenantData);
         
         // Update room occupancy for new tenant
         if (newRoomId) {
@@ -192,6 +193,11 @@ export default function Tenants() {
               is_occupied: true,
             });
           }
+        }
+
+        // WhatsApp Integration: Add tenant to group and send welcome message
+        if (newTenant && tenantForm.property_id) {
+          await handleWhatsAppIntegration(newTenant, tenantForm.property_id, newRoomId);
         }
         
         toast({
@@ -209,6 +215,77 @@ export default function Tenants() {
         description: 'Failed to save tenant',
         variant: 'destructive',
       });
+    }
+  };
+
+  const handleWhatsAppIntegration = async (tenant: Tenant, propertyId: string, roomId: string | null) => {
+    try {
+      // Get property WhatsApp settings
+      const { data: property, error: propertyError } = await supabase
+        .from('properties')
+        .select('whatsapp_enabled, whatsapp_group_id, whatsapp_group_invite_link, welcome_message_template, name')
+        .eq('id', propertyId)
+        .maybeSingle();
+
+      if (propertyError || !property || !property.whatsapp_enabled) {
+        return; // WhatsApp not enabled for this property
+      }
+
+      // Get room number if room is assigned
+      let roomNumber = 'N/A';
+      if (roomId) {
+        const { data: room } = await supabase
+          .from('rooms')
+          .select('room_number')
+          .eq('id', roomId)
+          .maybeSingle();
+        if (room) {
+          roomNumber = room.room_number;
+        }
+      }
+
+      // Log tenant addition to group
+      await supabase.from('whatsapp_logs').insert([{
+        property_id: propertyId,
+        tenant_id: tenant.id,
+        action_type: 'tenant_added',
+        phone_number: tenant.phone,
+        message: `Tenant ${tenant.full_name} added to WhatsApp group`,
+        status: 'pending',
+        metadata: {
+          tenant_name: tenant.full_name,
+          room_number: roomNumber,
+        },
+      }]);
+
+      // Prepare welcome message
+      const welcomeMessage = (property.welcome_message_template || '')
+        .replace('{property_name}', property.name)
+        .replace('{room_number}', roomNumber)
+        .replace('{tenant_name}', tenant.full_name);
+
+      // Log welcome message
+      await supabase.from('whatsapp_logs').insert([{
+        property_id: propertyId,
+        tenant_id: tenant.id,
+        action_type: 'welcome_sent',
+        phone_number: tenant.phone,
+        message: welcomeMessage,
+        status: 'pending',
+        metadata: {
+          tenant_name: tenant.full_name,
+          room_number: roomNumber,
+        },
+      }]);
+
+      // Show info toast
+      toast({
+        title: 'WhatsApp Integration',
+        description: 'Tenant will be added to WhatsApp group automatically. Check WhatsApp Settings for details.',
+      });
+    } catch (error) {
+      console.error('WhatsApp integration error:', error);
+      // Don't fail the tenant creation if WhatsApp integration fails
     }
   };
 
