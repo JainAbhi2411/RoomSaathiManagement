@@ -81,12 +81,12 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-sidebar-border">
             <Link to="/" className="flex items-center gap-2">
-              <div className="p-2 bg-sidebar-primary rounded-lg">
+              <div className="p-2 bg-sidebar-primary rounded-xl shadow-lg">
                 <Building2 className="h-6 w-6 text-sidebar-primary-foreground" />
               </div>
               <div>
-                <h1 className="font-bold text-sidebar-foreground">Property Pro</h1>
-                <p className="text-xs text-sidebar-foreground/70">Management System</p>
+                <h1 className="font-bold text-sidebar-foreground">Roomsaathi</h1>
+                <p className="text-xs text-sidebar-foreground/70">Property Management</p>
               </div>
             </Link>
           </div>
@@ -115,10 +115,13 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <header className="lg:hidden sticky top-0 z-10 bg-background border-b border-border">
           <div className="flex items-center justify-between p-4">
             <Link to="/" className="flex items-center gap-2">
-              <div className="p-2 bg-primary rounded-lg">
+              <div className="p-2 bg-primary rounded-xl shadow-lg">
                 <Building2 className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="font-bold text-foreground">Property Pro</span>
+              <div>
+                <span className="font-bold text-foreground">Roomsaathi</span>
+                <p className="text-xs text-muted-foreground">Property Management</p>
+              </div>
             </Link>
             <div className="flex items-center gap-2">
               <DropdownMenu>
@@ -149,12 +152,12 @@ export default function AppLayout({ children }: AppLayoutProps) {
                   <div className="flex flex-col h-full">
                     <div className="p-6 border-b border-border">
                       <Link to="/" className="flex items-center gap-2">
-                        <div className="p-2 bg-primary rounded-lg">
+                        <div className="p-2 bg-primary rounded-xl shadow-lg">
                           <Building2 className="h-6 w-6 text-primary-foreground" />
                         </div>
                         <div>
-                          <h1 className="font-bold">Property Pro</h1>
-                          <p className="text-xs text-muted-foreground">Management System</p>
+                          <h1 className="font-bold">Roomsaathi</h1>
+                          <p className="text-xs text-muted-foreground">Property Management</p>
                         </div>
                       </Link>
                     </div>
