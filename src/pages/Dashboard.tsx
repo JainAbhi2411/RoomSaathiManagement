@@ -3,10 +3,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { getDashboardStats, getProperties } from '@/db/api';
 import type { DashboardStats, Property } from '@/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import {
   Building2,
   DoorOpen,
@@ -17,6 +18,14 @@ import {
   Plus,
   ArrowRight,
   Sparkles,
+  Bell,
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  IndianRupee,
+  Calendar,
+  Activity,
+  BarChart3,
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -174,7 +183,162 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Quick Stats */}
+      {/* Quick Actions & Notifications */}
+      <div className="grid grid-cols-1 @sm:grid-cols-2 xl:grid-cols-4 gap-4 xl:gap-6">
+        <Card className="shadow-lg border-2 hover:border-primary/30 transition-all @sm:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between text-base xl:text-lg">
+              <div className="flex items-center gap-2">
+                <Bell className="h-5 w-5 text-primary" />
+                <span>Recent Notifications</span>
+              </div>
+              <Badge variant="secondary" className="text-xs">3 New</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-start gap-3 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                <AlertCircle className="h-5 w-5 text-yellow-500 shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium">Rent Payment Due</p>
+                  <p className="text-xs text-muted-foreground">3 tenants have pending payments for this month</p>
+                  <p className="text-xs text-muted-foreground mt-1">2 hours ago</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium">Payment Received</p>
+                  <p className="text-xs text-muted-foreground">₹15,000 received from Room 101</p>
+                  <p className="text-xs text-muted-foreground mt-1">5 hours ago</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                <Clock className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium">Maintenance Scheduled</p>
+                  <p className="text-xs text-muted-foreground">AC repair scheduled for tomorrow at 10 AM</p>
+                  <p className="text-xs text-muted-foreground mt-1">1 day ago</p>
+                </div>
+              </div>
+            </div>
+            <Link to="/notifications" className="block mt-4">
+              <Button variant="outline" size="sm" className="w-full">
+                View All Notifications
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-lg border-2 hover:border-primary/30 transition-all @sm:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base xl:text-lg">
+              <Activity className="h-5 w-5 text-primary" />
+              <span>Quick Actions</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-3">
+              <Link to="/properties/new" className="block">
+                <Button variant="outline" className="w-full h-auto flex-col gap-2 py-4">
+                  <Building2 className="h-6 w-6 text-primary" />
+                  <span className="text-xs font-medium">Add Property</span>
+                </Button>
+              </Link>
+              <Link to="/tenants" className="block">
+                <Button variant="outline" className="w-full h-auto flex-col gap-2 py-4">
+                  <Users className="h-6 w-6 text-primary" />
+                  <span className="text-xs font-medium">Manage Tenants</span>
+                </Button>
+              </Link>
+              <Link to="/rent-payments" className="block">
+                <Button variant="outline" className="w-full h-auto flex-col gap-2 py-4">
+                  <CreditCard className="h-6 w-6 text-primary" />
+                  <span className="text-xs font-medium">Collect Rent</span>
+                </Button>
+              </Link>
+              <Link to="/analytics" className="block">
+                <Button variant="outline" className="w-full h-auto flex-col gap-2 py-4">
+                  <BarChart3 className="h-6 w-6 text-primary" />
+                  <span className="text-xs font-medium">View Reports</span>
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Financial Overview */}
+      <Card className="shadow-lg border-2">
+        <CardHeader>
+          <div className="flex flex-col @sm:flex-row @sm:items-center @sm:justify-between gap-3">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-lg xl:text-xl">
+                <IndianRupee className="h-5 w-5 xl:h-6 xl:w-6 text-primary" />
+                <span>Financial Overview</span>
+              </CardTitle>
+              <CardDescription className="text-sm mt-1">
+                Track your revenue and expenses
+              </CardDescription>
+            </div>
+            <Link to="/analytics">
+              <Button variant="outline" size="sm">
+                <BarChart3 className="mr-2 h-4 w-4" />
+                Detailed Reports
+              </Button>
+            </Link>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 @sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-medium text-muted-foreground">Total Revenue</p>
+                <TrendingUp className="h-4 w-4 text-green-500" />
+              </div>
+              <p className="text-2xl font-bold text-green-500">₹{stats?.monthlyRevenue.toLocaleString() || 0}</p>
+              <p className="text-xs text-muted-foreground mt-1">This month</p>
+            </div>
+            <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-medium text-muted-foreground">Collected</p>
+                <CheckCircle className="h-4 w-4 text-blue-500" />
+              </div>
+              <p className="text-2xl font-bold text-blue-500">₹{((stats?.monthlyRevenue || 0) * 0.85).toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground mt-1">85% collected</p>
+            </div>
+            <div className="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-medium text-muted-foreground">Pending</p>
+                <Clock className="h-4 w-4 text-yellow-500" />
+              </div>
+              <p className="text-2xl font-bold text-yellow-500">₹{((stats?.monthlyRevenue || 0) * 0.15).toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground mt-1">15% pending</p>
+            </div>
+            <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/20">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-medium text-muted-foreground">Avg. Rent</p>
+                <IndianRupee className="h-4 w-4 text-purple-500" />
+              </div>
+              <p className="text-2xl font-bold text-purple-500">₹{Math.round((stats?.monthlyRevenue || 0) / (stats?.occupiedRooms || 1)).toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground mt-1">Per room</p>
+            </div>
+          </div>
+          <div className="mt-6">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm font-medium">Collection Rate</p>
+              <p className="text-sm font-bold text-green-500">85%</p>
+            </div>
+            <Progress value={85} className="h-2" />
+            <p className="text-xs text-muted-foreground mt-2">
+              Excellent! You're collecting rent on time from most tenants.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Performance Metrics */}
       <div className="grid grid-cols-1 @sm:grid-cols-2 xl:grid-cols-3 gap-4 xl:gap-6">
         <Card className="shadow-lg border-2 hover:border-primary/30 transition-all">
           <CardHeader>
