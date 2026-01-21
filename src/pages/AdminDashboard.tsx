@@ -226,106 +226,115 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="@container space-y-4 xl:space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Shield className="h-8 w-8 text-primary" />
-            Admin Dashboard
+          <h1 className="text-2xl xl:text-3xl font-bold flex items-center gap-2">
+            <Shield className="h-6 w-6 xl:h-8 xl:w-8 text-primary" />
+            <span className="hidden @sm:inline">Admin Dashboard</span>
+            <span className="@sm:hidden">Admin</span>
           </h1>
-          <p className="text-muted-foreground mt-1">Manage and verify property listings</p>
+          <p className="text-sm xl:text-base text-muted-foreground mt-1">Manage and verify property listings</p>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 xl:grid-cols-3">
+      <div className="grid gap-3 xl:gap-4 grid-cols-1 @sm:grid-cols-2 xl:grid-cols-3">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Total Properties
             </CardTitle>
-            <Building2 className="h-5 w-5 text-primary" />
+            <Building2 className="h-4 w-4 xl:h-5 xl:w-5 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{stats.total}</div>
+            <div className="text-2xl xl:text-3xl font-bold">{stats.total}</div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Verified Properties
             </CardTitle>
-            <CheckCircle2 className="h-5 w-5 text-green-500" />
+            <CheckCircle2 className="h-4 w-4 xl:h-5 xl:w-5 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-green-500">{stats.verified}</div>
+            <div className="text-2xl xl:text-3xl font-bold text-green-500">{stats.verified}</div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <Card className="@sm:col-span-2 xl:col-span-1">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Pending Verification
             </CardTitle>
-            <XCircle className="h-5 w-5 text-yellow-500" />
+            <XCircle className="h-4 w-4 xl:h-5 xl:w-5 text-yellow-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-yellow-500">{stats.pending}</div>
+            <div className="text-2xl xl:text-3xl font-bold text-yellow-500">{stats.pending}</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Filter */}
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <Button
           variant={filterStatus === 'all' ? 'default' : 'outline'}
           onClick={() => setFilterStatus('all')}
+          size="sm"
+          className="flex-1 @sm:flex-none min-w-[100px]"
         >
-          All Properties
+          All ({stats.total})
         </Button>
         <Button
           variant={filterStatus === 'verified' ? 'default' : 'outline'}
           onClick={() => setFilterStatus('verified')}
+          size="sm"
+          className="flex-1 @sm:flex-none min-w-[100px]"
         >
-          Verified
+          Verified ({stats.verified})
         </Button>
         <Button
           variant={filterStatus === 'unverified' ? 'default' : 'outline'}
           onClick={() => setFilterStatus('unverified')}
+          size="sm"
+          className="flex-1 @sm:flex-none min-w-[100px]"
         >
-          Pending
+          Pending ({stats.pending})
         </Button>
       </div>
 
       {/* Properties Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Property Listings</CardTitle>
+          <CardTitle className="text-lg xl:text-xl">Property Listings</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {filteredProperties.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <Filter className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No properties found</p>
+            <div className="text-center py-8 xl:py-12 text-muted-foreground px-4">
+              <Filter className="h-10 w-10 xl:h-12 xl:w-12 mx-auto mb-4 opacity-50" />
+              <p className="text-sm xl:text-base">No properties found</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Property</TableHead>
-                    <TableHead>Owner</TableHead>
-                    <TableHead>Location</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Listed Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Website Sync</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+            <>
+              {/* Desktop Table View - Hidden on mobile */}
+              <div className="hidden xl:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Property</TableHead>
+                      <TableHead>Owner</TableHead>
+                      <TableHead>Location</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Listed Date</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Website Sync</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                   {filteredProperties.map((property) => (
                     <TableRow key={property.id}>
                       <TableCell>
@@ -456,9 +465,149 @@ export default function AdminDashboard() {
                       </TableCell>
                     </TableRow>
                   ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Card View - Hidden on desktop */}
+              <div className="xl:hidden divide-y divide-border">
+                {filteredProperties.map((property) => (
+                  <div key={property.id} className="p-4 space-y-3">
+                    {/* Property Header */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-base truncate">{property.name}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {property.total_rooms} rooms • {property.total_floors} floors
+                        </p>
+                      </div>
+                      <Badge variant="outline" className="capitalize shrink-0 text-xs">
+                        {property.property_type}
+                      </Badge>
+                    </div>
+
+                    {/* Owner Info */}
+                    <div className="flex items-center gap-2 text-sm">
+                      <User className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium truncate">{property.owner?.username || 'Unknown'}</div>
+                        <div className="text-xs text-muted-foreground truncate">{property.owner?.email}</div>
+                      </div>
+                    </div>
+
+                    {/* Location & Date */}
+                    <div className="flex items-center justify-between gap-4 text-sm">
+                      <div className="flex items-center gap-1 flex-1 min-w-0">
+                        <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                        <span className="truncate">{property.city}, {property.state}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
+                        <Calendar className="h-3 w-3" />
+                        {format(new Date(property.created_at), 'MMM dd')}
+                      </div>
+                    </div>
+
+                    {/* Status Badges */}
+                    <div className="flex flex-wrap gap-2">
+                      {property.is_verified ? (
+                        <Badge className="bg-green-500 text-xs">
+                          <CheckCircle2 className="h-3 w-3 mr-1" />
+                          Verified
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-yellow-500 text-xs">
+                          <XCircle className="h-3 w-3 mr-1" />
+                          Pending
+                        </Badge>
+                      )}
+                      
+                      {property.synced_to_website ? (
+                        <Badge className="bg-blue-500 text-xs">
+                          <Globe className="h-3 w-3 mr-1" />
+                          Synced
+                        </Badge>
+                      ) : property.sync_error ? (
+                        <Badge variant="destructive" className="text-xs">
+                          <AlertTriangle className="h-3 w-3 mr-1" />
+                          Sync Failed
+                        </Badge>
+                      ) : property.is_verified ? (
+                        <Badge variant="outline" className="text-xs">
+                          <RefreshCw className="h-3 w-3 mr-1" />
+                          Sync Pending
+                        </Badge>
+                      ) : null}
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => navigate(`/properties/${property.id}`)}
+                        className="flex-1 min-w-[80px]"
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        View
+                      </Button>
+                      {!property.is_verified && (
+                        <>
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setSelectedProperty(property);
+                              setVerifyDialog(true);
+                            }}
+                            className="flex-1 min-w-[80px]"
+                          >
+                            <CheckCircle2 className="h-4 w-4 mr-1" />
+                            Verify
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => {
+                              setSelectedProperty(property);
+                              setRejectDialog(true);
+                            }}
+                            className="flex-1 min-w-[80px]"
+                          >
+                            <XCircle className="h-4 w-4 mr-1" />
+                            Reject
+                          </Button>
+                        </>
+                      )}
+                      {property.is_verified && !property.synced_to_website && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={async () => {
+                            const result = await syncPropertyToWebsite(property.id);
+                            if (result.success) {
+                              toast({
+                                title: 'Sync Successful',
+                                description: 'Property synced to website',
+                              });
+                              loadProperties();
+                            } else {
+                              toast({
+                                title: 'Sync Failed',
+                                description: result.error,
+                                variant: 'destructive',
+                              });
+                            }
+                          }}
+                          className="flex-1 min-w-[80px]"
+                        >
+                          <RefreshCw className="h-4 w-4 mr-1" />
+                          Sync Now
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
