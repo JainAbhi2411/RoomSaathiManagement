@@ -87,41 +87,43 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="@container space-y-6 xl:space-y-8 animate-fade-in">
       {/* Welcome Section */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-primary/90 to-secondary p-8 text-white shadow-2xl">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-primary/90 to-secondary p-6 xl:p-8 text-white shadow-2xl">
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="h-5 w-5" />
-            <span className="text-sm font-medium opacity-90">Welcome back</span>
+            <Sparkles className="h-4 w-4 xl:h-5 xl:w-5" />
+            <span className="text-xs xl:text-sm font-medium opacity-90">Welcome back</span>
           </div>
-          <h1 className="text-3xl xl:text-4xl font-bold mb-2">
+          <h1 className="text-2xl xl:text-3xl 2xl:text-4xl font-bold mb-2">
             Hello, {(profile?.username || 'User') as string}! 👋
           </h1>
-          <p className="text-white/80 mb-6">
+          <p className="text-sm xl:text-base text-white/80 mb-4 xl:mb-6">
             Here's what's happening with your properties today
           </p>
-          <div className="flex flex-wrap gap-3">
-            <Link to="/properties/new">
-              <Button variant="secondary" className="shadow-lg">
+          <div className="flex flex-wrap gap-2 xl:gap-3">
+            <Link to="/properties/new" className="flex-1 @sm:flex-none">
+              <Button variant="secondary" className="shadow-lg w-full @sm:w-auto" size="sm">
                 <Plus className="mr-2 h-4 w-4" />
-                Add Property
+                <span className="hidden @sm:inline">Add Property</span>
+                <span className="@sm:hidden">Add</span>
               </Button>
             </Link>
-            <Link to="/analytics">
-              <Button variant="outline" className="bg-white/10 border-white/20 hover:bg-white/20 hover:text-white">
-                View Analytics
+            <Link to="/analytics" className="flex-1 @sm:flex-none">
+              <Button variant="outline" size="sm" className="bg-white/10 border-white/20 hover:bg-white/20 hover:text-white w-full @sm:w-auto">
+                <span className="hidden @sm:inline">View Analytics</span>
+                <span className="@sm:hidden">Analytics</span>
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
           </div>
         </div>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-0 right-0 w-48 h-48 xl:w-64 xl:h-64 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-32 h-32 xl:w-48 xl:h-48 bg-white/10 rounded-full blur-3xl"></div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 @sm:grid-cols-2 xl:grid-cols-4 gap-4 xl:gap-6">
         {loading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <Card key={i} className="shadow-lg">
@@ -149,11 +151,11 @@ export default function Dashboard() {
                     {stat.title}
                   </CardTitle>
                   <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                    <Icon className={`h-5 w-5 ${stat.color}`} />
+                    <Icon className={`h-4 w-4 xl:h-5 xl:w-5 ${stat.color}`} />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold mb-1">{stat.value}</div>
+                  <div className="text-2xl xl:text-3xl font-bold mb-1">{stat.value}</div>
                   <div className="flex items-center text-xs">
                     {stat.trendUp ? (
                       <TrendingUp className="h-3 w-3 text-success mr-1" />
@@ -163,7 +165,7 @@ export default function Dashboard() {
                     <span className={stat.trendUp ? 'text-success' : 'text-destructive'}>
                       {stat.trend}
                     </span>
-                    <span className="text-muted-foreground ml-1">from last month</span>
+                    <span className="text-muted-foreground ml-1 hidden @sm:inline">from last month</span>
                   </div>
                 </CardContent>
               </Card>
@@ -173,27 +175,28 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 @sm:grid-cols-2 xl:grid-cols-3 gap-4 xl:gap-6">
         <Card className="shadow-lg border-2 hover:border-primary/30 transition-all">
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Room Status</span>
+            <CardTitle className="flex flex-col @sm:flex-row @sm:items-center @sm:justify-between gap-2">
+              <span className="text-base xl:text-lg">Room Status</span>
               <Link to="/occupancy">
-                <Button variant="ghost" size="sm">
-                  View Details
+                <Button variant="ghost" size="sm" className="w-full @sm:w-auto">
+                  <span className="hidden @sm:inline">View Details</span>
+                  <span className="@sm:hidden">Details</span>
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-3 xl:space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="h-3 w-3 rounded-full bg-destructive"></div>
                   <span className="text-sm">Occupied</span>
                 </div>
-                <span className="font-bold">{stats?.occupiedRooms || 0}</span>
+                <span className="font-bold text-base xl:text-lg">{stats?.occupiedRooms || 0}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
