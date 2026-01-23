@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getDashboardStats, getProperties } from '@/db/api';
 import type { DashboardStats, Property } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { usePlanLimits } from '@/hooks/usePlanLimits';
 import {
   Building2,
   DoorOpen,
@@ -30,9 +31,11 @@ import {
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const { limits, hasFeature } = usePlanLimits();
 
   useEffect(() => {
     if (user) {
@@ -100,9 +103,14 @@ export default function Dashboard() {
       {/* Welcome Section */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-primary/90 to-secondary p-6 xl:p-8 text-white shadow-2xl">
         <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="h-4 w-4 xl:h-5 xl:w-5" />
-            <span className="text-xs xl:text-sm font-medium opacity-90">Welcome back</span>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 xl:h-5 xl:w-5" />
+              <span className="text-xs xl:text-sm font-medium opacity-90">Welcome back</span>
+            </div>
+            <Badge variant="secondary" className="text-xs">
+              {limits.planName}
+            </Badge>
           </div>
           <h1 className="text-2xl xl:text-3xl 2xl:text-4xl font-bold mb-2">
             Hello, {(profile?.username || 'User') as string}! 👋
@@ -118,13 +126,15 @@ export default function Dashboard() {
                 <span className="@sm:hidden">Add</span>
               </Button>
             </Link>
-            <Link to="/analytics" className="flex-1 @sm:flex-none">
-              <Button variant="outline" size="sm" className="bg-white/10 border-white/20 hover:bg-white/20 hover:text-white w-full @sm:w-auto">
-                <span className="hidden @sm:inline">View Analytics</span>
-                <span className="@sm:hidden">Analytics</span>
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+            {hasFeature('Advanced Analytics') && (
+              <Link to="/analytics" className="flex-1 @sm:flex-none">
+                <Button variant="outline" size="sm" className="bg-white/10 border-white/20 hover:bg-white/20 hover:text-white w-full @sm:w-auto">
+                  <span className="hidden @sm:inline">View Analytics</span>
+                  <span className="@sm:hidden">Analytics</span>
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
         <div className="absolute top-0 right-0 w-48 h-48 xl:w-64 xl:h-64 bg-white/10 rounded-full blur-3xl"></div>
