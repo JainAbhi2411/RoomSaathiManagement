@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import Login from './pages/Login';
+import PlanSelection from './pages/PlanSelection';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Properties from './pages/Properties';
@@ -18,6 +19,7 @@ import RentPayments from './pages/RentPaymentsEnhanced';
 import Maintenance from './pages/Maintenance';
 import Contracts from './pages/Contracts';
 import Analytics from './pages/Analytics';
+import PlanManagement from './pages/PlanManagement';
 
 interface RouteConfig {
   name: string;
@@ -34,6 +36,12 @@ const routes: RouteConfig[] = [
     visible: false,
   },
   {
+    name: 'Plan Selection',
+    path: '/plans',
+    element: <PlanSelection />,
+    visible: false,
+  },
+  {
     name: 'Dashboard',
     path: '/',
     element: <Dashboard />,
@@ -42,6 +50,12 @@ const routes: RouteConfig[] = [
     name: 'Admin Dashboard',
     path: '/admin',
     element: <AdminDashboard />,
+    visible: false,
+  },
+  {
+    name: 'Plan Management',
+    path: '/admin/plans',
+    element: <PlanManagement />,
     visible: false,
   },
   {
