@@ -1,283 +1,342 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import CSVUpload from '@/components/csv/CSVUpload';
-import { getProperties } from '@/db/api';
-import { supabase } from '@/db/supabase';
-import type { Property } from '@/types';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Upload, Download, FileText, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
-const ROOM_TEMPLATE_HEADERS = [
-  'room_number',
-  'floor',
-  'price',
-  'monthly_rent',
-  'capacity',
-  'sharing_type',
-  'price_per_seat',
-  'room_amenities',
-  'room_description',
-  'room_size',
-  'has_attached_bathroom',
-  'has_balcony',
-  'furnishing_status',
-];
+interface CSVUploadProps {
+  title: string;
+  description: string;
+  templateHeaders: string[];
+  templateFileName: string;
+  onUpload: (data: any[]) => Promise<{ success: boolean; errors?: string[] }>;
+  validateRow?: (row: any, index: number) => string | null;
+}
 
-export default function RoomCSVUpload() {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [selectedPropertyId, setSelectedPropertyId] = useState<string>('');
-  const [loading, setLoading] = useState(true);
+export default function CSVUpload({
+  title,
+  description,
+  templateHeaders,
+  templateFileName,
+  onUpload,
+  validateRow,
+}: CSVUploadProps) {
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const [uploadResult, setUploadResult] = useState<{
+    success: boolean;
+    message: string;
+    errors?: string[];
+  } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
-  useEffect(() => {
-    loadProperties();
-  }, [user]);
+  const downloadTemplate = () => {
+    const csvContent = templateHeaders.join(',') + '\n';
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = templateFileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    
+    toast({
+      title: 'Template Downloaded',
+      description: 'CSV template has been downloaded successfully.',
+    });
+  };
 
-  const loadProperties = async () => {
-    if (!user) return;
-    try {
-      const data = await getProperties(user.id);
-      setProperties(data);
-      if (data.length > 0) {
-        setSelectedPropertyId(data[0].id);
-      }
-    } catch (error) {
-      console.error('Error loading properties:', error);
-    } finally {
-      setLoading(false);
+  const parseCSV = (text: string): any[] => {
+    const lines = text.split('\n').filter(line => line.trim());
+    if (lines.length < 2) return [];
+
+    const headers = lines[0].split(',').map(h => h.trim());
+    const data: any[] = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',').map(v => v.trim());
+      const row: any = {};
+      
+      headers.forEach((header, index) => {
+        let value = values[index] || '';
+        
+        // Handle boolean values
+        if (value.toLowerCase() === 'true') value = 'true';
+        if (value.toLowerCase() === 'false') value = 'false';
+        
+        // Handle arrays (comma-separated values in quotes or brackets)
+        if (value.startsWith('[') && value.endsWith(']')) {
+          value = value.slice(1, -1).split(';').map(v => v.trim()).filter(v => v);
+        }
+        
+        row[header] = value;
+      });
+      
+      data.push(row);
+    }
+
+    return data;
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
     }
   };
 
-  const validateRoomRow = (row: any, index: number): string | null => {
-    // Required fields
-    if (!row.room_number || !row.room_number.trim()) {
-      return 'Room number is required';
-    }
-    if (!row.price || isNaN(parseFloat(row.price))) {
-      return 'Price must be a valid number';
-    }
-    if (!row.capacity || isNaN(parseInt(row.capacity))) {
-      return 'Capacity must be a valid number';
-    }
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
 
-    // Validate numeric fields
-    if (row.floor && isNaN(parseInt(row.floor))) {
-      return 'Floor must be a valid number';
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileSelect(e.dataTransfer.files[0]);
     }
-    if (row.monthly_rent && isNaN(parseFloat(row.monthly_rent))) {
-      return 'Monthly rent must be a valid number';
-    }
-    if (row.price_per_seat && isNaN(parseFloat(row.price_per_seat))) {
-      return 'Price per seat must be a valid number';
-    }
-    if (row.room_size && isNaN(parseFloat(row.room_size))) {
-      return 'Room size must be a valid number';
-    }
-
-    // Validate sharing type
-    if (row.sharing_type && !['single', 'double', 'triple', 'quad', 'dormitory'].includes(row.sharing_type.toLowerCase())) {
-      return 'Sharing type must be one of: single, double, triple, quad, dormitory';
-    }
-
-    // Validate furnishing status
-    if (row.furnishing_status && !['fully_furnished', 'semi_furnished', 'unfurnished'].includes(row.furnishing_status.toLowerCase())) {
-      return 'Furnishing status must be one of: fully_furnished, semi_furnished, unfurnished';
-    }
-
-    return null;
   };
 
-  const handleUpload = async (data: any[]): Promise<{ success: boolean; errors?: string[] }> => {
-    if (!selectedPropertyId) {
-      return {
-        success: false,
-        errors: ['Please select a property first'],
-      };
+  const handleFileSelect = (selectedFile: File) => {
+    if (!selectedFile.name.endsWith('.csv')) {
+      toast({
+        title: 'Invalid File',
+        description: 'Please upload a CSV file.',
+        variant: 'destructive',
+      });
+      return;
     }
 
+    setFile(selectedFile);
+    setUploadResult(null);
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+
+    setUploading(true);
+    setUploadResult(null);
+
     try {
-      const rooms = data.map((row) => ({
-        property_id: selectedPropertyId,
-        room_number: row.room_number.trim(),
-        floor: row.floor ? parseInt(row.floor) : null,
-        price: parseFloat(row.price),
-        monthly_rent: row.monthly_rent ? parseFloat(row.monthly_rent) : null,
-        is_occupied: false,
-        capacity: parseInt(row.capacity),
-        sharing_type: row.sharing_type?.toLowerCase() || null,
-        price_per_seat: row.price_per_seat ? parseFloat(row.price_per_seat) : null,
-        occupied_seats: 0,
-        room_amenities: Array.isArray(row.room_amenities)
-          ? row.room_amenities
-          : row.room_amenities?.split(';').map((a: string) => a.trim()).filter((a: string) => a) || null,
-        room_images: null,
-        room_description: row.room_description?.trim() || null,
-        room_size: row.room_size ? parseFloat(row.room_size) : null,
-        has_attached_bathroom: row.has_attached_bathroom?.toLowerCase() === 'true',
-        has_balcony: row.has_balcony?.toLowerCase() === 'true',
-        furnishing_status: row.furnishing_status?.toLowerCase() || null,
-      }));
+      const text = await file.text();
+      const data = parseCSV(text);
 
-      const { error } = await supabase
-        .from('rooms')
-        .insert(rooms);
-
-      if (error) {
-        console.error('Insert error:', error);
-        return {
+      if (data.length === 0) {
+        setUploadResult({
           success: false,
-          errors: [error.message],
-        };
+          message: 'No data found in CSV file.',
+        });
+        setUploading(false);
+        return;
       }
 
-      return { success: true };
+      // Validate rows if validator provided
+      const errors: string[] = [];
+      if (validateRow) {
+        data.forEach((row, index) => {
+          const error = validateRow(row, index);
+          if (error) {
+            errors.push(`Row ${index + 2}: ${error}`);
+          }
+        });
+      }
+
+      if (errors.length > 0) {
+        setUploadResult({
+          success: false,
+          message: `Found ${errors.length} validation error(s).`,
+          errors: errors.slice(0, 10), // Show first 10 errors
+        });
+        setUploading(false);
+        return;
+      }
+
+      // Upload data
+      const result = await onUpload(data);
+
+      if (result.success) {
+        setUploadResult({
+          success: true,
+          message: `Successfully uploaded ${data.length} record(s).`,
+        });
+        setFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        toast({
+          title: 'Upload Successful',
+          description: `${data.length} record(s) have been imported.`,
+        });
+      } else {
+        setUploadResult({
+          success: false,
+          message: 'Upload failed. Please check the errors below.',
+          errors: result.errors,
+        });
+      }
     } catch (error) {
       console.error('Upload error:', error);
-      return {
+      setUploadResult({
         success: false,
-        errors: ['An unexpected error occurred during upload'],
-      };
+        message: 'An error occurred while processing the file.',
+      });
+    } finally {
+      setUploading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <p className="text-muted-foreground">Loading properties...</p>
-      </div>
-    );
-  }
-
-  if (properties.length === 0) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/properties')}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold">Bulk Upload Rooms</h1>
-          </div>
-        </div>
-        <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">
-            You need to create at least one property before uploading rooms.
-          </p>
-          <Button onClick={() => navigate('/properties/new')}>
-            Create Property
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate('/properties')}
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Download Template */}
+        <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+          <div className="flex items-center gap-3">
+            <FileText className="h-5 w-5 text-muted-foreground" />
+            <div>
+              <p className="font-medium">CSV Template</p>
+              <p className="text-sm text-muted-foreground">
+                Download the template to see required format
+              </p>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" onClick={downloadTemplate}>
+            <Download className="h-4 w-4 mr-2" />
+            Download
+          </Button>
+        </div>
+
+        {/* Upload Area */}
+        <div
+          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+            dragActive
+              ? 'border-primary bg-primary/5'
+              : 'border-border hover:border-primary/50'
+          }`}
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          onDrop={handleDrop}
         >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Bulk Upload Rooms</h1>
-          <p className="text-muted-foreground mt-1">
-            Upload multiple rooms at once using a CSV file
-          </p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv"
+            onChange={(e) => e.target.files && handleFileSelect(e.target.files[0])}
+            className="hidden"
+          />
+          
+          <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+          
+          {file ? (
+            <div className="space-y-2">
+              <p className="font-medium">{file.name}</p>
+              <p className="text-sm text-muted-foreground">
+                {(file.size / 1024).toFixed(2)} KB
+              </p>
+              <div className="flex gap-2 justify-center mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setFile(null);
+                    setUploadResult(null);
+                    if (fileInputRef.current) {
+                      fileInputRef.current.value = '';
+                    }
+                  }}
+                >
+                  Remove
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleUpload}
+                  disabled={uploading}
+                >
+                  {uploading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <p className="font-medium">Drag and drop your CSV file here</p>
+              <p className="text-sm text-muted-foreground">or</p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Browse Files
+              </Button>
+            </div>
+          )}
         </div>
-      </div>
 
-      {/* Property Selection */}
-      <div className="bg-card p-6 rounded-lg border">
-        <Label htmlFor="property-select" className="text-base font-semibold mb-2 block">
-          Select Property
-        </Label>
-        <p className="text-sm text-muted-foreground mb-4">
-          Choose the property where you want to add rooms
-        </p>
-        <Select value={selectedPropertyId} onValueChange={setSelectedPropertyId}>
-          <SelectTrigger id="property-select" className="w-full md:w-96">
-            <SelectValue placeholder="Select a property" />
-          </SelectTrigger>
-          <SelectContent>
-            {properties.map((property) => (
-              <SelectItem key={property.id} value={property.id}>
-                {property.name} - {property.city}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+        {/* Upload Result */}
+        {uploadResult && (
+          <Alert variant={uploadResult.success ? 'default' : 'destructive'}>
+            <div className="flex items-start gap-3">
+              {uploadResult.success ? (
+                <CheckCircle className="h-5 w-5 text-green-600" />
+              ) : (
+                <XCircle className="h-5 w-5" />
+              )}
+              <div className="flex-1">
+                <AlertDescription>
+                  <p className="font-medium mb-2">{uploadResult.message}</p>
+                  {uploadResult.errors && uploadResult.errors.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                      <p className="text-sm font-medium">Errors:</p>
+                      <ul className="text-sm list-disc list-inside space-y-1">
+                        {uploadResult.errors.map((error, index) => (
+                          <li key={index}>{error}</li>
+                        ))}
+                      </ul>
+                      {uploadResult.errors.length >= 10 && (
+                        <p className="text-sm italic mt-2">
+                          Showing first 10 errors...
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </AlertDescription>
+              </div>
+            </div>
+          </Alert>
+        )}
 
-      <CSVUpload
-        title="Upload Rooms CSV"
-        description="Download the template, fill in your room data, and upload the CSV file to add multiple rooms at once."
-        templateHeaders={ROOM_TEMPLATE_HEADERS}
-        templateFileName="rooms_template.csv"
-        onUpload={handleUpload}
-        validateRow={validateRoomRow}
-      />
-
-      <div className="bg-muted/50 p-4 rounded-lg space-y-3">
-        <h3 className="font-semibold">Field Descriptions:</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-          <div>
-            <span className="font-medium">room_number:</span> Room number/identifier (required)
-          </div>
-          <div>
-            <span className="font-medium">floor:</span> Floor number (optional)
-          </div>
-          <div>
-            <span className="font-medium">price:</span> Room price (required)
-          </div>
-          <div>
-            <span className="font-medium">monthly_rent:</span> Monthly rent amount (optional)
-          </div>
-          <div>
-            <span className="font-medium">capacity:</span> Maximum occupancy (required)
-          </div>
-          <div>
-            <span className="font-medium">sharing_type:</span> single, double, triple, quad, or dormitory (optional)
-          </div>
-          <div>
-            <span className="font-medium">price_per_seat:</span> Price per person (optional)
-          </div>
-          <div>
-            <span className="font-medium">room_amenities:</span> Separate with semicolons (e.g., AC;TV;Wardrobe)
-          </div>
-          <div>
-            <span className="font-medium">room_description:</span> Room description (optional)
-          </div>
-          <div>
-            <span className="font-medium">room_size:</span> Size in sq ft (optional)
-          </div>
-          <div>
-            <span className="font-medium">has_attached_bathroom:</span> true or false (default: false)
-          </div>
-          <div>
-            <span className="font-medium">has_balcony:</span> true or false (default: false)
-          </div>
-          <div>
-            <span className="font-medium">furnishing_status:</span> fully_furnished, semi_furnished, or unfurnished (optional)
-          </div>
+        {/* Instructions */}
+        <div className="text-sm text-muted-foreground space-y-2 p-4 bg-muted/50 rounded-lg">
+          <p className="font-medium">Instructions:</p>
+          <ul className="list-disc list-inside space-y-1">
+            <li>Download the CSV template to see the required format</li>
+            <li>Fill in your data following the template structure</li>
+            <li>For array fields (like amenities), separate values with semicolons (;)</li>
+            <li>Use 'true' or 'false' for boolean fields</li>
+            <li>Save the file as CSV format</li>
+            <li>Upload the file using the area above</li>
+          </ul>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
