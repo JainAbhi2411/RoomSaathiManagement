@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { getTenantDocuments, deleteTenantDocument, downloadTenantDocument } from '@/db/api';
-import { TenantDocument } from '@/types/types';
+import { TenantDocument } from '@/types';
 import { format } from 'date-fns';
 
 interface DocumentListProps {
