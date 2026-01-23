@@ -14,11 +14,12 @@ import { Toaster } from '@/components/ui/toaster';
 function AppContent() {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login';
+  const isPlanSelectionPage = location.pathname === '/plans';
 
   return (
     <>
       <IntersectObserver />
-      {isLoginPage ? (
+      {isLoginPage || isPlanSelectionPage ? (
         <Routes>
           {routes.map((route, index) => (
             <Route key={index} path={route.path} element={route.element} />
