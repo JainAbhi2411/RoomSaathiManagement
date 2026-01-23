@@ -711,3 +711,166 @@ export const getRentPaymentAnalytics = async (propertyId: string, startDate?: st
     paymentsByMonth,
   };
 };
+
+// ==================== Tenant Documents ====================
+
+export async function uploadTenantDocument(
+  tenantId: string,
+  file: File,
+  documentType: string,
+  notes?: string
+): Promise<{ data: any | null; error: Error | null }> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return { data: null, error: new Error('User not authenticated') };
+    }
+
+    // Validate file size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      return { data: null, error: new Error('File size must be less than 10MB') };
+    }
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+    if (!allowedTypes.includes(file.type)) {
+      return { data: null, error: new Error('Only JPEG, PNG, and PDF files are allowed') };
+    }
+
+    // Generate unique file name
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${tenantId}/${documentType}_${Date.now()}.${fileExt}`;
+
+    // Upload to storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('tenant-documents')
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.error('Storage upload error:', uploadError);
+      return { data: null, error: uploadError };
+    }
+
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from('tenant-documents')
+      .getPublicUrl(fileName);
+
+    // Save document metadata to database
+    const { data, error } = await supabase
+      .from('tenant_documents')
+      .insert({
+        tenant_id: tenantId,
+        document_type: documentType,
+        file_name: file.name,
+        file_url: urlData.publicUrl,
+        file_size: file.size,
+        mime_type: file.type,
+        uploaded_by: user.id,
+        notes: notes || null
+      })
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      console.error('Database insert error:', error);
+      // Clean up uploaded file
+      await supabase.storage.from('tenant-documents').remove([fileName]);
+      return { data: null, error };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    console.error('Upload error:', err);
+    return { data: null, error: err as Error };
+  }
+}
+
+export async function getTenantDocuments(
+  tenantId: string
+): Promise<{ data: any[] | null; error: Error | null }> {
+  const { data, error } = await supabase
+    .from('tenant_documents')
+    .select('*')
+    .eq('tenant_id', tenantId)
+    .order('uploaded_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching tenant documents:', error);
+    return { data: null, error };
+  }
+
+  return { data: data || [], error: null };
+}
+
+export async function deleteTenantDocument(
+  documentId: string
+): Promise<{ error: Error | null }> {
+  try {
+    // Get document details first
+    const { data: doc, error: fetchError } = await supabase
+      .from('tenant_documents')
+      .select('file_url')
+      .eq('id', documentId)
+      .maybeSingle();
+
+    if (fetchError || !doc) {
+      return { error: fetchError || new Error('Document not found') };
+    }
+
+    // Extract file path from URL
+    const urlParts = doc.file_url.split('/tenant-documents/');
+    const filePath = urlParts[1];
+
+    // Delete from storage
+    if (filePath) {
+      const { error: storageError } = await supabase.storage
+        .from('tenant-documents')
+        .remove([filePath]);
+
+      if (storageError) {
+        console.error('Storage delete error:', storageError);
+      }
+    }
+
+    // Delete from database
+    const { error: deleteError } = await supabase
+      .from('tenant_documents')
+      .delete()
+      .eq('id', documentId);
+
+    if (deleteError) {
+      console.error('Database delete error:', deleteError);
+      return { error: deleteError };
+    }
+
+    return { error: null };
+  } catch (err) {
+    console.error('Delete error:', err);
+    return { error: err as Error };
+  }
+}
+
+export async function downloadTenantDocument(
+  fileUrl: string,
+  fileName: string
+): Promise<void> {
+  try {
+    const response = await fetch(fileUrl);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error('Download error:', err);
+    throw err;
+  }
+}
