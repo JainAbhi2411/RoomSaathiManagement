@@ -43,7 +43,9 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Edit, Trash2, Users } from 'lucide-react';
+import { Plus, Edit, Trash2, Users, FileText } from 'lucide-react';
+import DocumentUpload from '@/components/tenants/DocumentUpload';
+import DocumentList from '@/components/tenants/DocumentList';
 
 export default function Tenants() {
   const { user } = useAuth();
@@ -54,6 +56,9 @@ export default function Tenants() {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTenant, setEditingTenant] = useState<Tenant | null>(null);
+  const [documentsDialogOpen, setDocumentsDialogOpen] = useState(false);
+  const [selectedTenantForDocs, setSelectedTenantForDocs] = useState<Tenant | null>(null);
+  const [documentRefreshTrigger, setDocumentRefreshTrigger] = useState(0);
   const [tenantForm, setTenantForm] = useState({
     property_id: '',
     room_id: '',
@@ -582,13 +587,25 @@ export default function Tenants() {
                           <Button
                             variant="outline"
                             size="icon"
+                            onClick={() => {
+                              setSelectedTenantForDocs(tenant);
+                              setDocumentsDialogOpen(true);
+                            }}
+                            title="Manage Documents"
+                          >
+                            <FileText className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
                             onClick={() => handleOpenDialog(tenant)}
+                            title="Edit Tenant"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <Button variant="outline" size="icon">
+                              <Button variant="outline" size="icon" title="Delete Tenant">
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             </AlertDialogTrigger>
@@ -618,6 +635,32 @@ export default function Tenants() {
           )}
         </CardContent>
       </Card>
+
+      {/* Documents Dialog */}
+      <Dialog open={documentsDialogOpen} onOpenChange={setDocumentsDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              Tenant Documents - {selectedTenantForDocs?.full_name}
+            </DialogTitle>
+            <DialogDescription>
+              Upload and manage documents for this tenant (Aadhaar cards, booking forms, photos, etc.)
+            </DialogDescription>
+          </DialogHeader>
+          {selectedTenantForDocs && (
+            <div className="space-y-6 mt-4">
+              <DocumentUpload
+                tenantId={selectedTenantForDocs.id}
+                onUploadComplete={() => setDocumentRefreshTrigger((prev) => prev + 1)}
+              />
+              <DocumentList
+                tenantId={selectedTenantForDocs.id}
+                refreshTrigger={documentRefreshTrigger}
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
