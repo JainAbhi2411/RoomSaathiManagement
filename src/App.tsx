@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import IntersectObserver from '@/components/common/IntersectObserver';
 import AppLayout from '@/components/layouts/AppLayout';
+import PWAInstallPrompt from '@/components/PWAInstallPrompt';
+import UpdateNotification from '@/components/UpdateNotification';
 
 import routes from './routes';
 
@@ -34,6 +36,8 @@ function AppContent() {
         </AppLayout>
       )}
       <Toaster />
+      <PWAInstallPrompt />
+      <UpdateNotification />
     </>
   );
 }
