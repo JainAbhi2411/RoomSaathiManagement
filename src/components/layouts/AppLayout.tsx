@@ -210,9 +210,20 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>
                     <p className="font-medium">{(profile?.username || 'User') as string}</p>
-                    <p className="text-xs text-muted-foreground capitalize">{(profile?.role || 'owner') as string}</p>
+                    <p className="text-xs text-muted-foreground capitalize">
+                      {isAdmin ? 'Administrator' : (profile?.role || 'owner') as string}
+                    </p>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuItem onClick={() => navigate('/admin')}>
+                        <Shield className="mr-2 h-4 w-4" />
+                        Admin Dashboard
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="mr-2 h-4 w-4" />
                     Logout
