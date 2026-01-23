@@ -4,6 +4,8 @@ import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Properties from './pages/Properties';
 import PropertyForm from './pages/PropertyForm';
+import PropertyCSVUpload from './pages/PropertyCSVUpload';
+import RoomCSVUpload from './pages/RoomCSVUpload';
 import PropertyDetails from './pages/PropertyDetails';
 import RoomManagement from './pages/RoomManagement';
 import RoomBooking from './pages/RoomBooking';
