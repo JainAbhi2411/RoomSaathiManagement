@@ -24,6 +24,35 @@ export interface Profile {
   created_at: string;
   updated_at: string;
   is_admin?: boolean;
+  current_plan_id?: string | null;
+}
+
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  duration_days: number;
+  max_properties: number | null;
+  max_rooms: number | null;
+  features: string[];
+  is_active: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserSubscription {
+  id: string;
+  user_id: string;
+  plan_id: string;
+  start_date: string;
+  end_date: string;
+  status: 'active' | 'expired' | 'cancelled';
+  payment_status: 'pending' | 'paid' | 'failed';
+  created_at: string;
+  updated_at: string;
+  plan?: SubscriptionPlan | SubscriptionPlan[];
 }
 
 export interface Property {
