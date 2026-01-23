@@ -1,6 +1,6 @@
 // Service Worker for Roomsaathi PWA
-const CACHE_NAME = 'roomsaathi-v1.0.0';
-const RUNTIME_CACHE = 'roomsaathi-runtime';
+const CACHE_NAME = 'roomsaathi-v1.0.1';
+const RUNTIME_CACHE = 'roomsaathi-runtime-v1';
 
 // Assets to cache on install
 const PRECACHE_ASSETS = [
@@ -9,6 +9,8 @@ const PRECACHE_ASSETS = [
   '/manifest.json',
   '/icons/logo-512.png',
 ];
+
+console.log('[Service Worker] Loading...');
 
 // Install event - cache essential assets
 self.addEventListener('install', (event) => {
