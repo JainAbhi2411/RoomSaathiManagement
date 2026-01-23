@@ -18,8 +18,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Building2, Plus, Edit, Trash2, Eye, MapPin, Shield } from 'lucide-react';
+import { Building2, Plus, Edit, Trash2, Eye, MapPin, Shield, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { usePlanLimits } from '@/hooks/usePlanLimits';
+import { useNavigate } from 'react-router-dom';
 
 const propertyTypeLabels: Record<string, string> = {
   pg: 'PG',
@@ -31,9 +33,11 @@ const propertyTypeLabels: Record<string, string> = {
 
 export default function Properties() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { limits, hasFeature, canAddProperty } = usePlanLimits();
 
   useEffect(() => {
     if (user) {
@@ -76,19 +80,64 @@ export default function Properties() {
     }
   };
 
+  const handleAddProperty = () => {
+    if (!canAddProperty(properties.length)) {
+      toast({
+        title: 'Plan Limit Reached',
+        description: `Your ${limits.planName} allows up to ${limits.maxProperties} properties. Upgrade to add more.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+    navigate('/properties/new');
+  };
+
+  const handleBulkUpload = (type: 'properties' | 'rooms') => {
+    if (type === 'properties' && !hasFeature('CSV Bulk Upload')) {
+      toast({
+        title: 'Premium Feature',
+        description: 'CSV Bulk Upload is available in Premium Plan. Upgrade to unlock this feature.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    navigate(type === 'properties' ? '/properties/csv-upload' : '/rooms/csv-upload');
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl xl:text-3xl font-bold text-foreground">Properties</h1>
-          <p className="text-muted-foreground mt-1">Manage your property listings</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Properties</h1>
+          <p className="text-muted-foreground mt-1">
+            Manage your property listings
+            {limits.maxProperties && (
+              <span className="ml-2 text-xs">
+                ({properties.length}/{limits.maxProperties} used)
+              </span>
+            )}
+          </p>
         </div>
-        <Link to="/properties/new">
-          <Button>
+        <div className="flex flex-wrap gap-2">
+          {hasFeature('CSV Bulk Upload') && (
+            <>
+              <Button onClick={() => handleBulkUpload('properties')} variant="outline" size="sm">
+                <Upload className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Bulk Upload Properties</span>
+                <span className="sm:hidden">Bulk Upload</span>
+              </Button>
+              <Button onClick={() => handleBulkUpload('rooms')} variant="outline" size="sm">
+                <Upload className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Bulk Upload Rooms</span>
+                <span className="sm:hidden">Upload Rooms</span>
+              </Button>
+            </>
+          )}
+          <Button onClick={handleAddProperty}>
             <Plus className="mr-2 h-4 w-4" />
             Add Property
           </Button>
-        </Link>
+        </div>
       </div>
 
       {loading ? (
