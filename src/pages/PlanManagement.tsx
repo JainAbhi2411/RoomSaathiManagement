@@ -26,7 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Plus, Edit, Trash2, Check, X, ArrowLeft } from 'lucide-react';
+import { Plus, Edit, Trash2, Check, X, ArrowLeft, Loader2 } from 'lucide-react';
 import { getAllPlans, createPlan, updatePlan, deletePlan } from '@/db/api';
 import type { SubscriptionPlan } from '@/types';
 import { useToast } from '@/hooks/use-toast';
