@@ -874,3 +874,204 @@ export async function downloadTenantDocument(
     throw err;
   }
 }
+
+// ==================== Subscription Plans ====================
+
+export async function getActivePlans() {
+  const { data, error } = await supabase
+    .from('subscription_plans')
+    .select('*')
+    .eq('is_active', true)
+    .order('display_order', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching active plans:', error);
+    throw error;
+  }
+
+  return data || [];
+}
+
+export async function getAllPlans() {
+  const { data, error } = await supabase
+    .from('subscription_plans')
+    .select('*')
+    .order('display_order', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching all plans:', error);
+    throw error;
+  }
+
+  return data || [];
+}
+
+export async function getPlanById(planId: string) {
+  const { data, error } = await supabase
+    .from('subscription_plans')
+    .select('*')
+    .eq('id', planId)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error fetching plan:', error);
+    throw error;
+  }
+
+  return data;
+}
+
+export async function createPlan(planData: any) {
+  const { data, error } = await supabase
+    .from('subscription_plans')
+    .insert(planData)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error creating plan:', error);
+    throw error;
+  }
+
+  return data;
+}
+
+export async function updatePlan(planId: string, planData: any) {
+  const { data, error } = await supabase
+    .from('subscription_plans')
+    .update(planData)
+    .eq('id', planId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating plan:', error);
+    throw error;
+  }
+
+  return data;
+}
+
+export async function deletePlan(planId: string) {
+  const { error } = await supabase
+    .from('subscription_plans')
+    .delete()
+    .eq('id', planId);
+
+  if (error) {
+    console.error('Error deleting plan:', error);
+    throw error;
+  }
+}
+
+export async function subscribeToPlan(userId: string, planId: string) {
+  try {
+    // Get plan details
+    const plan = await getPlanById(planId);
+    if (!plan) {
+      throw new Error('Plan not found');
+    }
+
+    // Calculate end date
+    const startDate = new Date();
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + plan.duration_days);
+
+    // Create subscription
+    const { data: subscription, error: subError } = await supabase
+      .from('user_subscriptions')
+      .insert({
+        user_id: userId,
+        plan_id: planId,
+        start_date: startDate.toISOString(),
+        end_date: endDate.toISOString(),
+        status: 'active',
+        payment_status: plan.price === 0 ? 'paid' : 'pending',
+      })
+      .select()
+      .single();
+
+    if (subError) {
+      console.error('Error creating subscription:', subError);
+      throw subError;
+    }
+
+    // Update user profile with current plan
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({ current_plan_id: planId })
+      .eq('id', userId);
+
+    if (profileError) {
+      console.error('Error updating profile:', profileError);
+      throw profileError;
+    }
+
+    return subscription;
+  } catch (error) {
+    console.error('Error subscribing to plan:', error);
+    throw error;
+  }
+}
+
+export async function getUserSubscription(userId: string) {
+  const { data, error } = await supabase
+    .from('user_subscriptions')
+    .select(`
+      *,
+      plan:subscription_plans(*)
+    `)
+    .eq('user_id', userId)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error fetching user subscription:', error);
+    throw error;
+  }
+
+  return data;
+}
+
+export async function checkPlanLimit(
+  userId: string,
+  limitType: 'properties' | 'rooms',
+  currentCount: number
+) {
+  try {
+    const subscription = await getUserSubscription(userId);
+    
+    if (!subscription || !subscription.plan) {
+      return { allowed: false, limit: null, message: 'No active subscription found' };
+    }
+
+    const plan = Array.isArray(subscription.plan) ? subscription.plan[0] : subscription.plan;
+    
+    if (limitType === 'properties') {
+      const limit = plan.max_properties;
+      if (limit === null) {
+        return { allowed: true, limit: null };
+      }
+      return {
+        allowed: currentCount < limit,
+        limit,
+        message: currentCount >= limit ? `You've reached your plan limit of ${limit} properties` : undefined,
+      };
+    } else {
+      const limit = plan.max_rooms;
+      if (limit === null) {
+        return { allowed: true, limit: null };
+      }
+      return {
+        allowed: currentCount < limit,
+        limit,
+        message: currentCount >= limit ? `You've reached your plan limit of ${limit} rooms` : undefined,
+      };
+    }
+  } catch (error) {
+    console.error('Error checking plan limit:', error);
+    return { allowed: true, limit: null };
+  }
+}
