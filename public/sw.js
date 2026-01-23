@@ -7,7 +7,7 @@ const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/icons/logo-512.png',
+  '/images/logo/logo.ico',
 ];
 
 console.log('[Service Worker] Loading...');
@@ -97,8 +97,8 @@ self.addEventListener('message', (event) => {
 self.addEventListener('push', (event) => {
   const options = {
     body: event.data ? event.data.text() : 'New update available',
-    icon: '/icons/logo-512.png',
-    badge: '/icons/logo-512.png',
+    icon: '/images/logo/logo.ico',
+    badge: '/images/logo/logo.ico',
     vibrate: [200, 100, 200],
     data: {
       dateOfArrival: Date.now(),
@@ -108,12 +108,12 @@ self.addEventListener('push', (event) => {
       {
         action: 'explore',
         title: 'View',
-        icon: '/icons/logo-512.png'
+        icon: '/images/logo/logo.ico'
       },
       {
         action: 'close',
         title: 'Close',
-        icon: '/icons/logo-512.png'
+        icon: '/images/logo/logo.ico'
       }
     ]
   };
