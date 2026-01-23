@@ -125,6 +125,21 @@ export interface Tenant {
   updated_at: string;
 }
 
+export interface TenantDocument {
+  id: string;
+  tenant_id: string;
+  document_type: 'aadhaar_front' | 'aadhaar_back' | 'booking_form' | 'photo' | 'other';
+  file_name: string;
+  file_url: string;
+  file_size: number;
+  mime_type: string;
+  uploaded_at: string;
+  uploaded_by: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface RentPayment {
   id: string;
   tenant_id: string;
