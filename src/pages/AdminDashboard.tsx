@@ -40,6 +40,9 @@ import {
   Globe,
   AlertTriangle,
   RefreshCw,
+  CreditCard,
+  BarChart3,
+  Activity,
 } from 'lucide-react';
 import { format } from 'date-fns';
 
