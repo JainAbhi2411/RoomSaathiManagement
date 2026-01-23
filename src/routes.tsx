@@ -76,6 +76,18 @@ const routes: RouteConfig[] = [
     visible: false,
   },
   {
+    name: 'Property CSV Upload',
+    path: '/properties/csv-upload',
+    element: <PropertyCSVUpload />,
+    visible: false,
+  },
+  {
+    name: 'Room CSV Upload',
+    path: '/rooms/csv-upload',
+    element: <RoomCSVUpload />,
+    visible: false,
+  },
+  {
     name: 'Property Details',
     path: '/properties/:id',
     element: <PropertyDetails />,
