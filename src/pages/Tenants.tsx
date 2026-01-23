@@ -559,7 +559,8 @@ export default function Tenants() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <Table>
+              {/* Desktop Table View */}
+              <Table className="hidden md:table">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Name</TableHead>
@@ -631,6 +632,84 @@ export default function Tenants() {
                   ))}
                 </TableBody>
               </Table>
+
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-4">
+                {tenants.map((tenant) => (
+                  <Card key={tenant.id}>
+                    <CardContent className="pt-6">
+                      <div className="space-y-3">
+                        <div>
+                          <p className="font-semibold text-lg">{tenant.full_name}</p>
+                          <p className="text-sm text-muted-foreground">{tenant.phone}</p>
+                        </div>
+                        {tenant.email && (
+                          <div>
+                            <p className="text-xs text-muted-foreground">Email</p>
+                            <p className="text-sm">{tenant.email}</p>
+                          </div>
+                        )}
+                        {tenant.id_proof_type && tenant.id_proof_number && (
+                          <div>
+                            <p className="text-xs text-muted-foreground">ID Proof</p>
+                            <p className="text-sm">{tenant.id_proof_type}: {tenant.id_proof_number}</p>
+                          </div>
+                        )}
+                        {tenant.emergency_contact && (
+                          <div>
+                            <p className="text-xs text-muted-foreground">Emergency Contact</p>
+                            <p className="text-sm">{tenant.emergency_contact}</p>
+                          </div>
+                        )}
+                        <div className="flex gap-2 pt-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1"
+                            onClick={() => {
+                              setSelectedTenantForDocs(tenant);
+                              setDocumentsDialogOpen(true);
+                            }}
+                          >
+                            <FileText className="h-4 w-4 mr-2" />
+                            Documents
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1"
+                            onClick={() => handleOpenDialog(tenant)}
+                          >
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="outline" size="sm">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Tenant</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to delete this tenant? This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteTenant(tenant.id)}>
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           )}
         </CardContent>
@@ -638,12 +717,12 @@ export default function Tenants() {
 
       {/* Documents Dialog */}
       <Dialog open={documentsDialogOpen} onOpenChange={setDocumentsDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto w-[95vw]">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-base md:text-lg">
               Tenant Documents - {selectedTenantForDocs?.full_name}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-sm">
               Upload and manage documents for this tenant (Aadhaar cards, booking forms, photos, etc.)
             </DialogDescription>
           </DialogHeader>
