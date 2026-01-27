@@ -16,6 +16,7 @@ export async function getProfile(userId: string): Promise<Profile | null> {
   }
   return data;
 }
+
 interface AuthContextType {
   user: User | null;
   profile: Profile | null;
@@ -38,58 +39,92 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setProfile(null);
       return;
     }
-
     const profileData = await getProfile(user.id);
     setProfile(profileData);
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        getProfile(session.user.id).then(setProfile);
-      }
-      setLoading(false);
-    });
-    // In this function, do NOT use any await calls. Use `.then()` instead to avoid deadlocks.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        getProfile(session.user.id).then(setProfile);
+    let isMounted = true;
+
+    // 1) Initial session load (only once)
+    supabase.auth.getSession().then(async ({ data: { session }, error }) => {
+      if (!isMounted) return;
+
+      if (error) console.error('getSession error:', error);
+
+      const u = session?.user ?? null;
+      setUser(u);
+
+      if (u) {
+        const p = await getProfile(u.id);
+        if (isMounted) setProfile(p);
       } else {
         setProfile(null);
       }
+
+      if (isMounted) setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    // 2) Listen for auth changes (keep subscription alive)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!isMounted) return;
+
+      const u = session?.user ?? null;
+      setUser(u);
+
+      // If signed out, clear profile immediately
+      if (!u) {
+        setProfile(null);
+        return;
+      }
+
+      // IMPORTANT: avoid fetching profile on TOKEN_REFRESHED
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+        getProfile(u.id).then(p => {
+          if (isMounted) setProfile(p);
+        });
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signInWithUsername = async (username: string, password: string) => {
     try {
+      // optional: validate username
+      if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+        throw new Error('Username can only contain letters, digits, and underscore');
+      }
+
       const email = `${username}@miaoda.com`;
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
 
       if (error) throw error;
       return { error: null };
     } catch (error) {
+      console.error('SignIn Error:', error);
       return { error: error as Error };
     }
   };
 
   const signUpWithUsername = async (username: string, password: string) => {
     try {
+      if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+        throw new Error('Username can only contain letters, digits, and underscore');
+      }
+
       const email = `${username}@miaoda.com`;
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
+      const { error } = await supabase.auth.signUp({ email, password });
 
       if (error) throw error;
       return { error: null };
     } catch (error) {
+      console.error('SignUp Error:', error);
       return { error: error as Error };
     }
   };
@@ -101,7 +136,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signInWithUsername, signUpWithUsername, signOut, refreshProfile }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        profile,
+        loading,
+        signInWithUsername,
+        signUpWithUsername,
+        signOut,
+        refreshProfile,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -109,8 +154,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 }
