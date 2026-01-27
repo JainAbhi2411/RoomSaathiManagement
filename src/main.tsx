@@ -18,9 +18,9 @@ registerServiceWorker().then((registration) => {
 setupInstallPrompt();
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+  
     <AppWrapper>
       <App />
     </AppWrapper>
-  </StrictMode>
+  
 );
